@@ -74,7 +74,7 @@ data_dir <- getwd()
 
 ################################################################################
 ## For filtered data through snpFiltR and LD-pruned via SeqArray & SNPrelate 
-filteredVCF <- paste0(data_dir, "/filteredVCF_ab")
+filteredVCF <- paste0(data_dir, "/Filtering/filteredVCF")
 
 #data_dir <- filteredVCF
 #data_dir
@@ -121,7 +121,7 @@ path_ugeno
 
 ######################################################################################
 ## Get in MetaData ## 
-md_csv <- read_csv("/datadir/noreponly_metadata_fixed.csv")
+md_csv <- read_csv("noreponly_metadata_fixed.csv")
 md <- read_csv(md_csv)
 md
 names(md)
@@ -325,7 +325,7 @@ grp_l
 ##########################################################
 
 setwd(out_dir) # set to out directory 
-setwd("/datadir/filteredVCF_ab/Pop_structr_out/DAPC/")
+setwd("/Pop_structr_out/DAPC/")
 
 ## Plot out our confidence in assigning individuals to each of the groups w/dapc1 ##
 scatter(dapc_l[[1]], posi.da="bottomleft")
@@ -748,7 +748,6 @@ dev.off()
 
 # An snmfProject can be load in a different session.
 project_path <- paste0(basefile, ".u.snmfProject")
-project_path <- "/Users/hwsung/Library/CloudStorage/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab/data/noreponly_v2.75.renamed.LDpruned.snmfProject"
 
 obj.at = load.snmfProject(project_path) 
 obj.at
@@ -757,7 +756,7 @@ obj.at
 ## Use a regular expression substitution to generate the new file name
 gendata_gl
 geno_file <- gl2geno(gendata_gl, outfile = "testgenofile", outpath = "test/")
-path_ugeno <- "/Users/hwsung/Library/CloudStorage/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab/data/noreponly_v2.75.renamed.LDpruned.geno"
+path_ugeno <- "noreponly_v2.75.renamed.LDpruned.geno"
 #file.copy(path_ugeno, path_geno) # do the copying with the new name
 
 ## Now we're ready to run sNMF. We'll run this using 1 to 10 possible ancestral 
@@ -854,27 +853,27 @@ admix_ordered4 <- admix_K4[order(admix_K4[,1], -admix_K4[,4]),]
 #####################################################################
 ## Read in Admixture analyses ## 
 # Q2
-admixture_q2 <- read_delim("/filteredVCF_ab/admixture/K2-10/noreponly_v2.75.renamed.LDpruned.2.Q", col_names = F)
+admixture_q2 <- read_delim("/admixture/K2-10/noreponly_v2.75.renamed.LDpruned.2.Q", col_names = F)
 names(admixture_q2) <- c("Ad_P2", "Ad_P1")
 admixture_q2
 #admix_snmf_q2<- cbind.data.frame(q_df, admixture_q2)
 admix_snmf_q2<- cbind.data.frame(pops, admixture_q2)
 
 # Q3
-admixture_q3 <- read_delim("/filteredVCF_ab/admixture/K2-10/noreponly_v2.75.renamed.LDpruned.3.Q", col_names = F)
+admixture_q3 <- read_delim("/admixture/K2-10/noreponly_v2.75.renamed.LDpruned.3.Q", col_names = F)
 names(admixture_q3) <- c("Ad_P1", "Ad_P2", "Ad_P3")
 admixture_q3 
 #admix_snmf_q3 <- cbind.data.frame(q_df3, admixture_q3)
 admix_snmf_q3 <- cbind.data.frame(pops, admixture_q3)
 
 # Q4 
-admixture_q4 <- read_delim("/filteredVCF_ab/admixture/K2-10/noreponly_v2.75.renamed.LDpruned.4.Q", col_names = F)
+admixture_q4 <- read_delim("/admixture/K2-10/noreponly_v2.75.renamed.LDpruned.4.Q", col_names = F)
 names(admixture_q4) <- c("Ad_P4", "Ad_P3", "Ad_P1", "Ad_P2")
 admixture_q4 
 #admix_snmf_q4 <- cbind.data.frame(q_df4, admixture_q4)
 admix_snmf_q4 <- cbind.data.frame(pops, admixture_q4)
 
-setwd("/filteredVCF_ab/Admixture")
+setwd("/admixture")
 write.csv(admix_snmf_q2, file = "admix_snmf_q2.csv", row.names = FALSE)
 write.csv(admix_snmf_q3, file = "admix_snmf_q3.csv", row.names = FALSE)
 write.csv(admix_snmf_q4, file = "admix_snmf_q4.csv", row.names = FALSE)
@@ -943,10 +942,10 @@ colors_2 <- c("#E41A1CFF","#4DAF4AFF")
 colors_3 <- c("#E41A1CFF", "#377EB8FF","#4DAF4AFF")
 
 # For results from admixture 
-admix.md <- read_csv("/filteredVCF_ab/admixture/popdata/popmap.csv")
+admix.md <- read_csv("/admixture_k3_pops/popmap.csv")
 admix.md
 
-admix_k2 <- read_csv("/filteredVCF_ab/admixture/admix_snmf_q2.csv")
+admix_k2 <- read_csv("admix_snmf_q2.csv")
 
 # cbind coord data with admixture data
 admix <- admix_k2
@@ -987,7 +986,7 @@ for (x in 1:nrow(coords)) {floating.pie(coords$Longitude[x],coords$Latitude[x],
                                         c(admix$Ad_P1[x],admix$Ad_P2[x]), radius=0.05, col=c("#377EB8FF","#E41A1CFF"))}
 dev.off() # close the pdf plotting device
 ##################################################################################### 
-admix_K3 <- read_csv("/filteredVCF_ab/admixture/admix_snmf_q3.csv")
+admix_K3 <- read_csv("admix_snmf_q3.csv")
 
 # cbind coord data with admixture data
 admix <- admix_K3
@@ -1033,7 +1032,7 @@ for (x in 1:nrow(coords)) {floating.pie(coords$Longitude[x],coords$Latitude[x],
                                         c(admix_K3$Ad_P1[x],admix_K3$Ad_P2[x],admix_K3$Ad_P3[x]), radius=0.05, col=c("#E41A1CFF","#4DAF4AFF","#377EB8FF"))}
 dev.off() # close the pdf plotting device
 ####################################################################################
-admix_K4 <- read_csv("/filteredVCF_ab/admixture/admix_snmf_q4.csv")
+admix_K4 <- read_csv("admix_snmf_q4.csv")
 
 # cbind coord data with admixture data
 admix <- admix_K4
@@ -1315,4 +1314,4 @@ coords1
 # An snmfProject can be exported to be imported in another directory
 # or in another computer
 
-export.snmfProject("dataset3.u.snmfProject")
+export.snmfProject(paste0(basename, ".u.snmfProject"))

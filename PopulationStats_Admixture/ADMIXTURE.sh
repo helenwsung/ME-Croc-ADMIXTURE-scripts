@@ -150,7 +150,7 @@ wget https://github.com/speciationgenomics/scripts/raw/master/plotADMIXTURE.r
 module load lang/R
 
 # For Morph_Sp
-Rscript plotADMIXTURE.r -p $FILE -i $FILE.list -k 6 -l CA,MCA,HY,CM
+Rscript plotADMIXTURE.r -p $FILE -i $FILE.MSp.list -k 6 -l CA,MCA,HY,CM
 	# requires four arguments:
 	# (1) the prefix for the ADMIXTURE output files (-p )
 	# (2) the file with the species information (-i )
@@ -158,12 +158,8 @@ Rscript plotADMIXTURE.r -p $FILE -i $FILE.list -k 6 -l CA,MCA,HY,CM
 	# (4) a list with the populations or species separated by commas (-l <pop1,pop2...>) 
 	# 		The list of populations provided with -l gives the order in which the populations or species shall be plotted
 
-Rscript /home/hwsung/kantar_koastore/helen/analyses/admixture/plotADMIXTURE.r -p $FILE -i /home/hwsung/kantar_koastore/helen/analyses/admixture/noreponly_v2/$FILE.MSp.list -k 6 -l CA,MCA,HY,CM
-
-
 # For monitoring unit: 
 Rscript plotADMIXTURE.r -p $FILE -i $FILE.montunit.list -k 6 -l CC,NC,BC,BRW,NSLW,CF,RHW,NRW,CB,NTW,STW
-Rscript /home/hwsung/kantar_koastore/helen/analyses/admixture/plotADMIXTURE.r -p /home/hwsung/kantar_koastore/helen/analyses/admixture/noreponly_v2/admixture_output/$FILE -i /home/hwsung/kantar_koastore/helen/analyses/admixture/noreponly_v2/data/noreponly_v2.75.renamed.LDpruned.Monit.Unit.list -k 6 -l CC,NC,NSLW,CB,STW,NTW,CF,BRW,RHW,NRW
 
 ## To evaluate if the ADMIXTURE plot is a good fit, you can use evaladmix and we highly recommend to also use other methods to help infer the demographic history 
 ## and evidence of hybridisation such as Dstatistics, demographic modeling etc.
@@ -173,16 +169,11 @@ http://www.popgen.dk/software/index.php/EvalAdmix
 # Run evalAdmix for all admixture K values
 ./evalAdmix -plink inputPlinkPrefix -fname inputPlinkPrefix.K.P -qname inputPlinkPrefix.K.Q -P 10 -o output.corres.txt
 
-# For noreponly_v2http://127.0.0.1:30905/graphics/plot_zoom_png?width=1728&height=1376
+# For noreponly_v2
+# http://127.0.0.1:30905/graphics/plot_zoom_png?width=1728&height=1376
 for i in {2..8}
 do
-./evalAdmix -plink /Users/hwsung/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab/plink/noreponly_v2.75.renamed.LDpruned -fname /Users/hwsung/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab/admixture/noreponly_v2.75.renamed.LDpruned.$i.P -qname /Users/hwsung/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab/admixture/noreponly_v2.75.renamed.LDpruned.$i.Q -P 10 -o noreponly_v2.75.renamed.LDpruned.Q$i.corres.txt
-done
-
-# For noreponly
-for i in {2..10}
-do
-./evalAdmix -plink /Users/hwsung/Library/CloudStorage/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly/filteredVCF/admixture/plink/3RADmerged_noreponly.LDthinned -fname /Users/hwsung/Library/CloudStorage/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly/filteredVCF/admixture/3RADmerged_noreponly.LDthinned.$i.P -qname /Users/hwsung/Library/CloudStorage/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly/filteredVCF/admixture/3RADmerged_noreponly.LDthinned.$i.Q -P 10 -o 3RADmerged_noreponly.LDthinned.Q$i.corres.txt
+./evalAdmix -plink ./plink/noreponly_v2.75.renamed.LDpruned -fname ./admixture/noreponly_v2.75.renamed.LDpruned.$i.P -qname ./admixture/noreponly_v2.75.renamed.LDpruned.$i.Q -P 10 -o noreponly_v2.75.renamed.LDpruned.Q$i.corres.txt
 done
 
 # Plot results in R for visualization 

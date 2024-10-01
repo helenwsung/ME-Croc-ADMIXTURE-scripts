@@ -15,18 +15,13 @@ library(LEA)
 library(poppr)
 library(ape)
 library(ggplot2)
+library(scales)
 
 ###########################################################################################################################
 ## noreponly_v2: All 3RADmerged samples with no repeats - 273 individuals ##
-
-data_dir <- "/Users/hwsung/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2"                      # Mac
-#data_dir <- "C:/Users/helen/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly"                        # PC
-
 # For filtered through snpFiltR data 
-filteredVCF <- paste0(data_dir, "/filteredVCF_ab")
-filteredVCF
-data_dir <- filteredVCF
-data_dir
+data_dir <- "/Users/hwsung/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab" 
+data_dir <- "Your/data/directory/"
 
 ## Set working directory ##
 setwd(data_dir)
@@ -36,8 +31,27 @@ setwd(data_dir)
 
 ## add population data ##
 # Population data
-md <- read_csv("admixture/popdata/popmap.csv")
+md <- read_csv("admixture/popdata/popmap_md.csv")
 md$Ad_cluster
+md
+
+## Change names for Morphological Species 
+md$Morph_Species <- gsub("MCA", "Mainland C. acutus", md$Morph_Species)
+md$Morph_Species <- gsub("CA", "Cayes C. acutus", md$Morph_Species)
+md$Morph_Species <- gsub("HY", "Putative Hybrids", md$Morph_Species)
+md$Morph_Species <- gsub("CM", "C. moreletii", md$Morph_Species)
+md$Morph_Species
+as.factor(md$Morph_Species)
+
+# Replace NA values in a specific column
+# pops <- pops %>%
+#mutate(Monitoring.Unit = ifelse(is.na(Monitoring.Unit), "unknown", Monitoring.Unit))
+# pops$Monitoring.Unit
+md$Monitoring.Unit <- str_replace_na(md$Monitoring.Unit, "unknown")
+
+md$Monitoring.Unit <- gsub("N/S Lagoon Watershed", "North/South Lagoon Watershed", md$Monitoring.Unit)
+md$Monitoring.Unit <- as.factor(md$Monitoring.Unit)
+md$Monitoring.Unit
 
 ## Adjust Population names ##
 pops<-md
@@ -45,12 +59,12 @@ pops$Ad_cluster
 pops$Monitoring.Unit
 pops <- pops %>% select(Sample, Ad_cluster, Morph_Species, sNMF_cluster, Monitoring.Unit)
 
-pops$Ad_cluster <- gsub("CM_90", "moreletti", pops$Ad_cluster) 
-pops$Ad_cluster <- gsub("CM_99", "moreletti", pops$Ad_cluster) 
-pops$Ad_cluster <- gsub("MCA_90", "acutus_A", pops$Ad_cluster) 
-pops$Ad_cluster <- gsub("MCA_99", "acutus_A", pops$Ad_cluster) 
-pops$Ad_cluster <- gsub("CA_90", "acutus_B", pops$Ad_cluster) 
-pops$Ad_cluster <- gsub("CA_99", "acutus_B", pops$Ad_cluster) 
+pops$Ad_cluster <- gsub("CM_90", "C. moreletii", pops$Ad_cluster) 
+pops$Ad_cluster <- gsub("CM_99", "C. moreletii", pops$Ad_cluster) 
+pops$Ad_cluster <- gsub("MCA_90", "acutus_A (Mainland lineage)", pops$Ad_cluster) 
+pops$Ad_cluster <- gsub("MCA_99", "acutus_A (Mainland lineage)", pops$Ad_cluster) 
+pops$Ad_cluster <- gsub("CA_90", "acutus_B (Cayes lineage)", pops$Ad_cluster) 
+pops$Ad_cluster <- gsub("CA_99", "acutus_B (Cayes lineage)", pops$Ad_cluster) 
 #pops$Ad_cluster <- gsub(".*Hybrid.*", "Hybrid", pops$Ad_cluster) 
 pops$Ad_cluster <- gsub("Acutus_backcross", "Hybrid_acutus", pops$Ad_cluster) 
 pops$Ad_cluster <- gsub("F1_Hybrid", "Hybrid", pops$Ad_cluster) 
@@ -60,12 +74,12 @@ pops$Ad_cluster <- gsub("Hybrid_CM_backcross", "Hybrid_moreletii", pops$Ad_clust
 as.factor(pops$Ad_cluster)
 
 pops$sNMF_cluster
-pops$sNMF_cluster <- gsub("CM_90", "moreletti", pops$sNMF_cluster) 
-pops$sNMF_cluster <- gsub("CM_99", "moreletti", pops$sNMF_cluster) 
-pops$sNMF_cluster <- gsub("MCA_90", "acutus_A", pops$sNMF_cluster) 
-pops$sNMF_cluster <- gsub("MCA_99", "acutus_A", pops$sNMF_cluster) 
-pops$sNMF_cluster <- gsub("CA_90", "acutus_B", pops$sNMF_cluster) 
-pops$sNMF_cluster <- gsub("CA_99", "acutus_B", pops$sNMF_cluster) 
+pops$sNMF_cluster <- gsub("CM_90", "moreletii", pops$sNMF_cluster) 
+pops$sNMF_cluster <- gsub("CM_99", "moreletii", pops$sNMF_cluster) 
+pops$sNMF_cluster <- gsub("MCA_90", "acutus_A (Mainland lineage)", pops$sNMF_cluster) 
+pops$sNMF_cluster <- gsub("MCA_99", "acutus_A (Mainland lineage)", pops$sNMF_cluster) 
+pops$sNMF_cluster <- gsub("CA_90", "acutus_B (Cayes lineage)", pops$sNMF_cluster) 
+pops$sNMF_cluster <- gsub("CA_99", "acutus_B (Cayes lineage)", pops$sNMF_cluster) 
 #pops$sNMF_cluster <- gsub(".*Hybrid.*", "Hybrid", pops$sNMF_cluster) 
 pops$sNMF_cluster <- gsub("Acutus_backcross", "Hybrid_acutus", pops$sNMF_cluster)
 pops$sNMF_cluster <- gsub("F1_Hybrid", "Hybrid", pops$sNMF_cluster) 
@@ -74,16 +88,11 @@ pops$sNMF_cluster <- gsub("Hybrid_CA_backcross", "Hybrid_acutus_B", pops$sNMF_cl
 pops$sNMF_cluster <- gsub("Hybrid_CM_backcross", "Hybrid_moreletii", pops$sNMF_cluster) 
 as.factor(pops$sNMF_cluster)
 
-pops$Morph_Species <- gsub("MCA", "acutus_Mainland", pops$Morph_Species) 
-pops$Morph_Species <- gsub("CA", "acutus_Cayes", pops$Morph_Species) 
-pops$Morph_Species <- gsub("CM", "moreletii", pops$Morph_Species) 
-pops$Morph_Species <- gsub("HY", "Hybrid", pops$Morph_Species) 
-as.factor(pops$Morph_Species)
-
-# Replace NA values in a specific column
-#pops <- pops %>%
-  #mutate(Monitoring.Unit = ifelse(is.na(Monitoring.Unit), "unknown", Monitoring.Unit))
-#pops$Monitoring.Unit
+#pops$Morph_Species <- gsub("MCA", "acutus_Mainland", pops$Morph_Species) 
+#pops$Morph_Species <- gsub("CA", "acutus_Cayes", pops$Morph_Species) 
+#pops$Morph_Species <- gsub("CM", "moreletii", pops$Morph_Species) 
+#pops$Morph_Species <- gsub("HY", "Hybrid", pops$Morph_Species) 
+#as.factor(pops$Morph_Species)
 
 ################################################################################
 ################################################################################
@@ -108,7 +117,7 @@ genofile
 #summarize data
 snpgdsSummary(vcf_gds)
 
-## Already LD pruned 
+## Already LD pruned data
 pca <- snpgdsPCA(genofile, autosome.only=FALSE, num.thread=2)
 show(pca)
 summary(pca)
@@ -151,7 +160,10 @@ sNMF_sp <- matches$sNMF_cluster
 mont.unit <- matches$Monitoring.Unit
 ################################################################################
 ## Set out directory ##
+out_dir <- paste0(data_dir, "/PCA/ME Figures")
 setwd(out_dir)
+list.files(out_dir)
+
 ################################################################################
 ## PCA by Morphological Species ##
 
@@ -167,23 +179,46 @@ head(tab)
 pop <- tab$pop
 pop
 
+#hue_pal()(4) # see colors 
+
 ## Plot Using ggplot
-pdf("PCA_by_morph_species.pdf")
-png(file="PCA_by_morph_species.png", width = 800, height = 800) # open the pdf plotting device
-tab %>% ggplot() + 
+PCA.msp <- tab %>% ggplot() + 
   geom_point(aes(x = EV1, y = EV2, fill = pop), size = 5, shape = 21) +
   #geom_text(aes(x = EV1, y = EV2, label = sample.id)) + # adds individual labels
   #scale_fill_manual(values = myPalette[c(3:1)], na.value = "grey80") +
+  scale_fill_manual("Morphological Species Groups", values = c("Cayes C. acutus" = "#00BFC4", 
+                                        "Mainland C. acutus" = "#7CAE00", 
+                                        "Putative Hybrids" = "#C77CFF", 
+                                        "C. moreletii" = "#F8766D")) + 
   theme_light() +
   labs(y = paste0("PC2", " ", "(", eig.vect2, "%",")"), 
        x = paste0("PC1", " ", "(", eig.vect1, "%",")"),
-       fill = "Morphological Groups") 
+       fill = "Morphological Species Groups") 
 #theme(plot.title = element_text(size = 30, hjust = 0.5),
 #axis.text = element_text(size = 24),
 #axis.title = element_text(size = 22),
 #panel.grid = element_blank()
+PCA.msp
+
+ggsave(
+  filename = "PCA_msp.png",
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", PCA.msp
+)
+
+ggsave(
+  filename = "PCA_msp.pdf",
+  width = 8, height = 7, dpi = 600,
+  device = "pdf", bg = "white", PCA.msp
+)
+
+pdf("PCA_by_morph_species.pdf")
+PCA.msp
 dev.off()
 
+png(file="PCA_by_morph_species.png", width = 800, height = 800) 
+PCA.msp
+dev.off()
 ################################################################################
 ## PCA by Monitoring Unit##
 
@@ -204,22 +239,52 @@ tab <- data.frame(sample.id = pca$sample.id,
 head(tab)
 
 # Plot with ggplot: genetic PC1 vs. genetic PC2
-pdf("PCA_by_Monitoring_Unit.pdf")
-png(file="PCA_by_Monitoring_Unit.png", width = 800, height = 800) # open the pdf plotting device
-gen_gen_plot = tab %>% ggplot() + geom_point(aes(x = EV1, y = EV2, fill = pop), size = 5, shape = 21) +
+PCA.mu <- tab %>% ggplot() + geom_point(aes(x = EV1, y = EV2, fill = pop), size = 5, shape = 21) +
   #geom_text(aes(x = EV1, y = EV2, label = sample.id)) + # adds individual labels
   #scale_fill_manual(values = myPalette[c(3:1)], na.value = "grey80") +
+  scale_fill_manual("Sampling Localities", values = c(
+    "Belize River Watershed" = "#F8766D",
+    "Chiquibul Forest" = "#ff7f0e",
+    "Coastal Cayes" = "#A3A500",
+    "Cockscomb Basin" = "#39B600",
+    "North/South Lagoon Watershed" = "#8c564b",
+    "New River Watershed" = "#00BFC4",
+    "Northern Cayes" = "#00B0F6",
+    "Northern Toledo Watershed" = "#9590FF",
+    "Rio Hondo Watershed" = "#E76BF3",
+    "Southern Toledo Watershed" = "#FF62BC",
+    "unknown" = "grey"
+  )) +
   theme_light() +
   labs(y = paste0("PC2", " ", "(", eig.vect2, "%",")"),
        x = paste0("PC1", " ", "(", eig.vect1, "%",")"),
-       fill = "Monitoring Unit") 
+       fill = "Sampling Localities") 
 #theme(plot.title = element_text(size = 30, hjust = 0.5),
 #axis.text = element_text(size = 24),
 #axis.title = element_text(size = 22),
 #panel.grid = element_blank()
-gen_gen_plot
+PCA.mu
+
+ggsave(
+  filename = "PCA_mu.png",
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", PCA.mu
+)
+
+ggsave(
+  filename = "PCA_mu.pdf",
+  width = 8, height = 7, dpi = 600,
+  device = "pdf", bg = "white", PCA.mu
+)
+
+
+pdf("PCA_by_Monitoring_Unit.pdf")
+PCA.mu
 dev.off()
 
+png(file="PCA_by_Monitoring_Unit.png", width = 800, height = 800)
+PCA.mu
+dev.off()
 ################################################################################
 ## PCA by Morph and Monitoring Unit##
 
@@ -234,26 +299,58 @@ tab <- data.frame(sample.id = pca$sample.id,
 head(tab)
 
 # Plot with ggplot: genetic PC1 vs. genetic PC2
-pdf("PCA_by_MU_Msp.pdf")
-png(file="PCA_by_MU_Msp.png", width = 800, height = 800) # open the pdf plotting device
-
-gen_gen_plot <- ggplot() + 
+PCA.msp.mu <- ggplot() + 
   geom_point(data = tab, 
              aes(x = EV1, y = EV2, color = factor(pop.mu), 
                  shape = factor(pop.msp)), size = 5) +
-  scale_shape_manual(values = c(1, 16, 17, 4)) +
-  #scale_color_manual(values = c("#00AFBB", "#E7B800", "#FC4E07"))+ # assigns individual colors
+  scale_shape_manual("Morphological Species Groups", 
+                     values = c("Cayes C. acutus" = 1, 
+                                "Mainland C. acutus" = 16, 
+                                "Putative Hybrids" = 17, 
+                                "C. moreletii" = 4)) +
+  scale_color_manual("Sampling Localities", values = c(
+    "Belize River Watershed" = "#F8766D",
+    "Chiquibul Forest" = "#ff7f0e",
+    "Coastal Cayes" = "#A3A500",
+    "Cockscomb Basin" = "#39B600",
+    "North/South Lagoon Watershed" = "#8c564b",
+    "New River Watershed" = "#00BFC4",
+    "Northern Cayes" = "#00B0F6",
+    "Northern Toledo Watershed" = "#9590FF",
+    "Rio Hondo Watershed" = "#E76BF3",
+    "Southern Toledo Watershed" = "#FF62BC",
+    "unknown" = "grey"
+  )) +
   theme_light() +
   labs(y = paste0("PC2", " ", "(", eig.vect2, "%",")"),
        x = paste0("PC1", " ", "(", eig.vect1, "%",")"),
-       color = "Monitoring Unit", shape = "Morphological Species") 
+       color = "Sampling Localities", shape = "Morphological Species") 
 #theme(plot.title = element_text(size = 30, hjust = 0.5),
 #axis.text = element_text(size = 24),
 #axis.title = element_text(size = 22),
 #panel.grid = element_blank()
-gen_gen_plot
+PCA.msp.mu
+
+
+ggsave(
+  filename = "PCA_msp.mu.png",
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", PCA.msp.mu
+)
+
+ggsave(
+  filename = "PCA_msp.mu.pdf",
+  width = 8, height = 7, dpi = 600,
+  device = "pdf", bg = "white", PCA.msp.mu
+)
+
+pdf("PCA_by_MU_Msp.pdf")
+PCA.msp.mu
 dev.off()
 
+png(file="PCA_by_MU_Msp.png", width = 800, height = 800) # open the pdf plotting device
+PCA.msp.mu
+dev.off()
 ################################################################################
 ## PCA by Admixture Groups ##
 
@@ -274,20 +371,56 @@ tab <- data.frame(sample.id = pca$sample.id,
 head(tab)
 
 # Plot with ggplot: genetic PC1 vs. genetic PC2
-pdf("PCA_by_Ad_cluster.pdf")
-png(file="PCA_by_Ad_cluster.png", width = 800, height = 800) # open the pdf plotting device
-gen_gen_plot = tab %>% ggplot() + geom_point(aes(x = EV1, y = EV2, fill = pop), size = 5, shape = 21) +
+PCA.ad = tab %>% ggplot() + geom_point(aes(x = EV1, y = EV2, fill = pop), size = 5, shape = 21) +
   #geom_text(aes(x = EV1, y = EV2, label = sample.id)) + # adds individual labels
   #scale_fill_manual(values = myPalette[c(3:1)], na.value = "grey80") +
+  scale_fill_manual("Admixture Group Assignments", 
+                     breaks = c(
+                       "acutus_A (Mainland lineage)",
+                       "acutus_B (Cayes lineage)",
+                       "Hybrid",
+                       "Hybrid_acutus",
+                       "Hybrid_acutus_A",
+                       "Hybrid_acutus_B",
+                       "Hybrid_moreletii",
+                       "C. moreletii"),
+                     values = c(
+                       "acutus_A (Mainland lineage)" = "#F8766D",
+                       "acutus_B (Cayes lineage)" = "#CD9600",
+                       "Hybrid"=  "#7CAE00",
+                       "Hybrid_acutus" = "#00BE67",
+                       "Hybrid_acutus_A" = "#00BFC4",
+                       "Hybrid_acutus_B" = "#00A9FF",
+                       "Hybrid_moreletii" = "#C77CFF",
+                       "C. moreletii" = "#FF61CC")) +
   theme_light() +
   labs(y = paste0("PC2", " ", "(", eig.vect2, "%",")"),
        x = paste0("PC1", " ", "(", eig.vect1, "%",")"),
-       fill = "Population") 
+       fill = "Admixture Group Assignments") 
 #theme(plot.title = element_text(size = 30, hjust = 0.5),
 #axis.text = element_text(size = 24),
 #axis.title = element_text(size = 22),
 #panel.grid = element_blank()
-gen_gen_plot
+PCA.ad
+
+ggsave(
+  filename = "PCA_ad.png",
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", PCA.ad
+)
+
+ggsave(
+  filename = "PCA_ad.pdf",
+  width = 8, height = 7, dpi = 600,
+  device = "pdf", bg = "white", PCA.ad
+)
+
+pdf("PCA_by_Ad_cluster.pdf")
+PCA.ad
+dev.off()
+
+png(file="PCA_by_Ad_cluster.png", width = 800, height = 800) # open the pdf plotting device
+PCA.ad
 dev.off()
 ################################################################################
 ## PCA by Morph and Admixture Groups ##
@@ -301,27 +434,75 @@ tab <- data.frame(sample.id = pca$sample.id,
                   EV4 = pca$eigenvect[,4],
                   stringsAsFactors = FALSE)
 head(tab)
-
+unique(tab$ad_clust)
 
 # Plot with ggplot: genetic PC1 vs. genetic PC2
-pdf("PCA_by_AdCluster_Msp.pdf")
-png(file="PCA_by_AdCluster_Msp.png", width = 800, height = 800) # open the pdf plotting device
-
-gen_gen_plot <- ggplot() + 
+PCA.ad.msp <- ggplot() + 
   geom_point(data = tab, 
              aes(x = EV1, y = EV2, color = factor(ad_clust), 
                  shape = factor(pop.msp)), size = 5) +
-  scale_shape_manual(values = c(1, 16, 17, 4)) +
-  #scale_color_manual(values = c("#00AFBB", "#E7B800", "#FC4E07"))+ # assigns individual colors
+  scale_shape_manual("Morphological Species Groups", 
+                     values = c("Cayes C. acutus" = 1, 
+                                "Mainland C. acutus" = 16, 
+                                "Putative Hybrids" = 17, 
+                                "C. moreletii" = 4)) +
+  scale_color_manual("Admixture Group Assignments", 
+                     breaks = c(
+                       "acutus_A (Mainland lineage)",
+                       "acutus_B (Cayes lineage)",
+                       "Hybrid","Hybrid_acutus",
+                       "Hybrid_acutus_A",
+                       "Hybrid_acutus_B",
+                       "Hybrid_moreletii",
+                       "C. moreletii"),
+                     values = c(
+                       "acutus_A (Mainland lineage)" = "#F8766D",
+                       "acutus_B (Cayes lineage)" = "#CD9600",
+                       "Hybrid"=  "#7CAE00",
+                       "Hybrid_acutus" = "#00BE67",
+                       "Hybrid_acutus_A" = "#00BFC4",
+                       "Hybrid_acutus_B" = "#00A9FF",
+                       "Hybrid_moreletii" = "#C77CFF",
+                       "C. moreletii" = "#FF61CC")) +
   theme_light() +
   labs(y = paste0("PC2", " ", "(", eig.vect2, "%",")"),
        x = paste0("PC1", " ", "(", eig.vect1, "%",")"),
-       color = "Admixture Populations", shape = "Morphological Species") 
+       color = "Admixture Group Assignments", shape = "Morphological Species") 
 #theme(plot.title = element_text(size = 30, hjust = 0.5),
 #axis.text = element_text(size = 24),
 #axis.title = element_text(size = 22),
 #panel.grid = element_blank()
-gen_gen_plot
+PCA.ad.msp
+dev.off()
+
+ggsave(
+  filename = "PCA_ad.msp.png",
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", PCA.ad.msp
+)
+
+ggsave(
+  filename = "PCA_ad.msp.pdf",
+  width = 8, height = 7, dpi = 600,
+  device = "pdf", bg = "white", PCA.ad.msp
+)
+
+ggsave(
+  filename = "PCA_ad.msp.tiff",
+  width = 8.5, height = 7, dpi = 600,
+  device = "tiff", bg = "white", PCA.ad.msp
+)
+
+pdf("PCA_by_AdCluster_Msp.pdf")
+PCA.ad.msp
+dev.off()
+
+png(file="PCA_by_AdCluster_Msp.png", width = 800, height = 800) # open the pdf plotting device
+PCA.ad.msp
+dev.off()
+
+tiff(file="PCA_by_AdCluster_Msp.tiff", width = 800, height = 800) # open the pdf plotting device
+PCA.ad.msp
 dev.off()
 ################################################################################
 ## PCA by MU and Admixture Groups ##
@@ -338,25 +519,67 @@ head(tab)
 
 
 # Plot with ggplot: genetic PC1 vs. genetic PC2
-pdf("PCA_by_AdCluster_MU.pdf")
-png(file="PCA_by_AdCluster_MU.png", width = 800, height = 800) # open the pdf plotting device
-
-gen_gen_plot <- ggplot() + 
+PCA.ad.mu <- ggplot() + 
   geom_point(data = tab, 
-             aes(x = EV1, y = EV2, color = factor(ad_clust), 
-                 shape = factor(morph_sp)), size = 5) +
-  scale_shape_manual(values = c(1, 16, 17, 4)) +
-  #scale_color_manual(values = c("#00AFBB", "#E7B800", "#FC4E07"))+ # assigns individual colors
+             aes(x = EV1, y = EV2, color = factor(pop.mu), 
+                 shape = factor(ad_clust)), size = 5) +
+  scale_shape_manual("Admixture Populations", 
+                     breaks = c(
+                       "acutus_A (Mainland lineage)",
+                       "acutus_B (Cayes lineage)",
+                       "Hybrid","Hybrid_acutus",
+                       "Hybrid_acutus_A",
+                       "Hybrid_acutus_B",
+                       "Hybrid_moreletii",
+                       "C. moreletii"),
+                     values = c(
+                       "acutus_A (Mainland lineage)" = 16,
+                       "acutus_B (Cayes lineage)" = 1,
+                       "Hybrid"=  13,
+                       "Hybrid_acutus" = 8,
+                       "Hybrid_acutus_A" = 17,
+                       "Hybrid_acutus_B" = 2,
+                       "Hybrid_moreletii" = 7,
+                       "C. moreletii" = 4)) +
+  scale_color_manual("Sampling Localities", values = c(
+    "Belize River Watershed" = "#F8766D",
+    "Chiquibul Forest" = "#ff7f0e",
+    "Coastal Cayes" = "#A3A500",
+    "Cockscomb Basin" = "#39B600",
+    "North/South Lagoon Watershed" = "#8c564b",
+    "New River Watershed" = "#00BFC4",
+    "Northern Cayes" = "#00B0F6",
+    "Northern Toledo Watershed" = "#9590FF",
+    "Rio Hondo Watershed" = "#E76BF3",
+    "Southern Toledo Watershed" = "#FF62BC",
+    "unknown" = "grey"
+  )) +
   theme_light() +
   labs(y = paste0("PC2", " ", "(", eig.vect2, "%",")"),
        x = paste0("PC1", " ", "(", eig.vect1, "%",")"),
-       color = "Admixture Populations", shape = "Morphological Species") 
-#theme(plot.title = element_text(size = 30, hjust = 0.5),
-#axis.text = element_text(size = 24),
-#axis.title = element_text(size = 22),
-#panel.grid = element_blank()
-gen_gen_plot
+       shape = "Admixture Group Assignment", color = "Sampling Locality") 
+PCA.ad.mu
+
+ggsave(
+  filename = "PCA_ad.mu.png",
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", PCA.ad.mu
+)
+
+ggsave(
+  filename = "PCA_ad.mu.pdf",
+  width = 8, height = 7, dpi = 600,
+  device = "pdf", bg = "white", PCA.ad.mu
+)
+
+pdf("PCA_by_AdCluster_MU.pdf")
+PCA.ad.mu
 dev.off()
+
+png(file="PCA_by_AdCluster_MU.png", width = 800, height = 800) # open the pdf plotting device
+PCA.ad.mu
+dev.off()
+
 ################################################################################
 ## PCA by sNMF Groups ##
 
