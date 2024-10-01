@@ -23,12 +23,9 @@ library(stringr)
 library(ggplot2)
 
 
-#setwd("/Users/harrington/Active_Research/Ecotone_genomics/GBS_Data/FSC/Boot_out")
-setwd("/datadir/filteredVCF_ab/fastsimcoal/boot_input/noreponly_v2.16.2yr")
-setwd("/datadir/filteredVCF_ab/fastsimcoal/best_L_allMods_boot_16.2yr")
+setwd("/datadir/best_L_allMods_boot_16.2yr")
 
-#plots_out_dir <- "/Users/harrington/Active_Research/Ecotone_genomics/GBS_Data/FSC"
-plots_out_dir <- "/datadir/filteredVCF_ab/fastsimcoal/best_L_allMods_boot_16.2yr/Boot_out"
+plots_out_dir <- "/datadir/best_L_allMods_boot_16.2yr/Boot_out"
 
 ## List all of the .bestlhoods files
 files_lnl<-list.files(recursive=TRUE, pattern=".bestlhoods")
@@ -237,9 +234,13 @@ ests <- point_ests_all[1,]  # reduce this down to just the best fit model
   mests_2 <- as.data.frame(t(mig_ests))
   mests_3 <- cbind(rownames(mests_2), mests_2)
   colnames(mests_3) <- c("Rate", "IndperGen")
-  #mests_3$Rate <- c("East_splendida", "splendida_East", "californiae_splendida", "splendida_californiae", "East_West", "West_East")
-  mests_3$Rate <- c("Mor->Acu_A", "Acu_A->Mor", "Acu_B->Acu_A", "Acu_A->Acu_B", "Acu_B->Mor", "Mor->acutus","acutus->Mor")
-  
+  mests_3$Rate <- c(paste0("moreletii", "\U2192", "acutus_A"), 
+                    paste0("acutus_A", "\U2192", "moreletii"), 
+                    paste0("acutus_B", "\U2192", "acutus_A"), 
+                    paste0("acutus_A", "\U2192", "acutus_B"), 
+                    paste0("acutus_B", "\U2192", "moreletii") , 
+                    paste0("moreletii", "\U2192", "acutus"),
+                    paste0("acutus", "\U2192", "moreletii"))
   
   
 
@@ -248,10 +249,10 @@ ests <- point_ests_all[1,]  # reduce this down to just the best fit model
   pests_2 <- as.data.frame(t(pop_ests))
   pests_3 <- cbind(rownames(pests_2), pests_2)
   colnames(pests_3) <- c("Population", "Individuals")
-  #pests_3$Population <- c("RootAnc", "CalSplenAnc", "EastPreBot", "CalPreBot", "SplenPreBot", "East", "Cal", "Splen")
-  pests_3$Population <- c("RootAnc", "acutusAnc", "MorPreBot", "Acu_BPreBot", "Acu_APreBot", "Mor", "Acu_B","Acu_A")
-
-
+  pests_3$Population <- c("RootAnc", "acutus_Anc", "moreletii PreResize", "acutus_B PreResize", "acutus_A PreResize", "moreletii", "acutus_B","acutus_A")
+  
+################################################################################
+################################################################################
 ### Plot out times as violin plots
 #tcont2<-cbind(converted_table$TCONT2, "TCont2")
 tdiv1<-cbind(converted_table$TDIV1, "TDiv1")
@@ -269,98 +270,140 @@ ggplot(times, aes(x=Event, y=Time)) +
   geom_violin(trim=FALSE, fill="blue") +
   theme_minimal()
 
-############################################################
-#setwd(plots_out_dir)
-### add in the best estimates - VIOLIN PLOT
-pdf(file="Boot_out/noreponly_v2_16.2yr_FSCboot_times.pdf", width=5.5, height=5.5)
-png(file="Boot_out/noreponly_v2_16.2yr_FSCboot_times.png")
+##############################################
+## add in the best estimates - VIOLIN PLOT ##
+##############################################
 times.plot<-ggplot(times, aes(x=Event, y=Time)) + 
   geom_violin(trim=FALSE, fill="lightblue") +
   geom_point(data = tests_3, aes(x = Event, y = Time), size = 3, shape = 23, fill = "black") +
+  scale_x_discrete(labels = c("TDiv1" = "Time of Divergence",
+                              "TResize" = "Time of Population Resize")) +
+  xlab("") +
   ylab("Time (years)") +
   theme_minimal()
 times.plot
+
+plots_out_dir
+
+ggsave(
+  filename = paste0(plots_out_dir,"/FSCboot_times.plot.png"),
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", times.plot
+)
+
+ggsave(
+  filename = paste0(plots_out_dir,"/FSCboot_times.plot.pdf"),
+  width = 8.5, height = 7, dpi = 600,
+  device = "pdf", bg = "white", times.plot
+)
+
+pdf(file="Boot_out/noreponly_v2_16.2yr_FSCboot_times.pdf", width=5.5, height=5.5)
+times.plot
 dev.off()
 
-#setwd(plots_out_dir)
-#pdf(file="getula_FSCboot_times.pdf", width=5.5, height=3)
-#ggplot(times_ma, aes(x=Event, y=Time)) + 
-#  geom_violin(trim=FALSE, fill="lightblue") +
-#  geom_point(data = tests_4, aes(x = Event, y = Time), size = 3, shape = 23, fill = "black") + 
-#  scale_y_continuous(breaks = seq(0, 4, by = 1), minor_breaks = seq(0 , 4, 0.25)) +
-#  ylab("Time (thousand years)") +
-#  theme_minimal()
-#dev.off()
+png(file="Boot_out/noreponly_v2_16.2yr_FSCboot_times.png")
+times.plot
+dev.off()
 
+################################################################################
+################################################################################
 ### Plot out migration as violin plots
-MIG02<-cbind(converted_table$MIG02, "Mor->Acu_A")    # MIG02
-MIG20<-cbind(converted_table$MIG20, "Acu_A->Mor")    # MIG20
-MIG12<-cbind(converted_table$MIG12, "Acu_B->Acu_A")    # MIG12
-MIG21<-cbind(converted_table$MIG21, "Acu_A->Acu_B")    # MIG21
-MIG10<-cbind(converted_table$MIG10,"Acu_B->Mor")    # MIG10
-MIG012<-cbind(converted_table$MIG012, "Mor->acutus") # MIG012
-MIG120<-cbind(converted_table$MIG120, "acutus->Mor") # MIG120
+MIG02<-cbind(converted_table$MIG02, paste0("moreletii", "\U2192", "acutus_A"))    # MIG02
+MIG20<-cbind(converted_table$MIG20, paste0("acutus_A", "\U2192", "moreletii"))    # MIG20
+MIG12<-cbind(converted_table$MIG12, paste0("acutus_B", "\U2192", "acutus_A"))    # MIG12
+MIG21<-cbind(converted_table$MIG21, paste0("acutus_A", "\U2192", "acutus_B"))    # MIG21
+MIG10<-cbind(converted_table$MIG10, paste0("acutus_B", "\U2192", "moreletii"))    # MIG10
+MIG012<-cbind(converted_table$MIG012, paste0("moreletii", "\U2192", "acutus")) # MIG012
+MIG120<-cbind(converted_table$MIG120, paste0("acutus", "\U2192", "moreletii")) # MIG120
 
 migs <- rbind(MIG02, MIG20, MIG12, MIG21, MIG10,MIG012, MIG120)
 colnames(migs) <- c("IndperGen", "Rate")
 migs <- as.data.frame(migs)
 migs$IndperGen <- as.numeric(migs$IndperGen)
-migs$Rate <- factor(migs$Rate , levels=c("Acu_B->Acu_A", "Acu_A->Acu_B","Acu_A->Mor", "Mor->Acu_A", "Acu_B->Mor", "acutus->Mor", "Mor->acutus"))
-
-ggplot(migs, aes(x=Rate, y=IndperGen)) + 
-  geom_violin(trim=FALSE, fill="green") +
-  theme_minimal()
-
+#migs$Rate <- as.factor(migs$Rate)
+migs$Rate <- factor(migs$Rate , levels=c(paste0("acutus_B", "\U2192", "acutus_A"),
+                                         paste0("acutus_A", "\U2192", "acutus_B"),
+                                         paste0("acutus_A", "\U2192", "moreletii"),
+                                         paste0("moreletii","\U2192", "acutus_A"),
+                                         paste0("acutus_B", "\U2192", "moreletii"),
+                                         paste0("acutus", "\U2192", "moreletii"),
+                                         paste0("moreletii", "\U2192", "acutus")))
 
 ## set the ylim lower - there are some extreme outliers for mig120
-ggplot(migs, aes(x=Rate, y=IndperGen)) + 
+migs.plot <- ggplot(migs, aes(x=Rate, y=IndperGen)) + 
   geom_violin(trim=FALSE, fill="green") +
+  xlab("") +
+  #ylab("Migration Rate (Individuals per Generation)") +
+  labs(y="Migration Rate \n (Individuals per generation)") +
   theme_minimal() +
+  theme(axis.text.x = element_text(face="bold", angle = 325, vjust=0.3)) +
   ylim(0,15)
 
-
-############################################################
-### add in the best estimates - VIOLIN PLOT
+migs.plot
+##############################################
+## add in the best estimates - VIOLIN PLOT ##
+##############################################
 pdf(file="Boot_out/croc_FSCboot_mig.pdf", width = 10, height = 10)
 png(filename = "Boot_out/croc_FSCboot_mig.png",width = 800, height = 800)
+
 mig.plot <- ggplot(migs, aes(x=Rate, y=IndperGen)) + 
   geom_violin(trim=FALSE, fill="green") +
   # ylim(0,30) +
   geom_point(data = mests_3, aes(x = Rate, y = IndperGen), size = 3, shape = 23, fill = "black") +
   scale_y_continuous(breaks = seq(0, 15, by = 5), minor_breaks = seq(0 , 15, 1), limits = c(0, 15)) +
-  ylab("Individuals per generation") +
+  labs(y="Migration Rate \n (Individuals per generation)") +
   xlab(NULL) +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text.x = element_text(face="bold", angle = 325, vjust=0.3)) 
+mig.plot
+
+dev.off()
+
+pdf(file="Boot_out/croc_FSCboot_mig.pdf", width = 10, height = 10)
 mig.plot
 dev.off()
 
+png(filename = "Boot_out/croc_FSCboot_mig.png",width = 800, height = 800)
+mig.plot
+dev.off()
 
+ggsave(
+  filename = paste0(plots_out_dir,"/FSCboot_mig.plot.png"),
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", mig.plot
+)
 
-
-
+ggsave(
+  filename = paste0(plots_out_dir,"/FSCboot_mig.plot.pdf"),
+  width = 8.5, height = 7, dpi = 600,
+  device = "pdf", bg = "white", mig.plot
+)
+################################################################################
+################################################################################
 ### Plot out pop sizes as violin plots
 NPOProotanc<-cbind(converted_table$NPOProotanc, "RootAnc")
-NPOP12anc<-cbind(converted_table$NPOP12anc, "acutusAnc")
-NPOP0PB<-cbind(converted_table$NPOP0PB, "MorPreBot")
-NPOP1PB<-cbind(converted_table$NPOP1PB, "Acu_BPreBot")
-NPOP2PB<-cbind(converted_table$NPOP2PB, "Acu_APreBot")
-NPOP0<-cbind(converted_table$NPOP0, "Mor")
-NPOP1<-cbind(converted_table$NPOP1, "Acu_B")
-NPOP2<-cbind(converted_table$NPOP2, "Acu_A")
+NPOP12anc<-cbind(converted_table$NPOP12anc, "acutus_Anc")
+NPOP0PB<-cbind(converted_table$NPOP0PB, "moreletii PreResize")
+NPOP1PB<-cbind(converted_table$NPOP1PB, "acutus_B PreResize")
+NPOP2PB<-cbind(converted_table$NPOP2PB, "acutus_A PreResize")
+NPOP0<-cbind(converted_table$NPOP0, "moreletii")
+NPOP1<-cbind(converted_table$NPOP1, "acutus_B")
+NPOP2<-cbind(converted_table$NPOP2, "acutus_A")
 
 popsizes <- rbind(NPOProotanc, NPOP12anc, NPOP0PB, NPOP1PB, NPOP2PB, NPOP0, NPOP1, NPOP2)
 colnames(popsizes) <- c("Individuals", "Population")
 popsizes <- as.data.frame(popsizes)
 popsizes$Individuals <- as.numeric(popsizes$Individuals)
-popsizes$Population <- factor(popsizes$Population , levels=c("Acu_B", "Acu_A", "Mor", "Acu_BPreBot", "Acu_APreBot", "MorPreBot", "acutusAnc", "RootAnc"))
+popsizes$Population <- factor(popsizes$Population , levels=c("acutus_B", "acutus_A", "moreletii", "acutus_B PreResize", "acutus_A PreResize", "moreletii PreResize", "acutus_Anc", "RootAnc"))
+#popsizes$Population <- as.factor(popsizes$Population)
 
 ggplot(popsizes, aes(x=Population, y=Individuals)) + 
   geom_violin(trim=FALSE, fill="pink") +
   theme_minimal()
 
-
-############################################################
-### add in the best estimates - VIOLIN PLOT
+##############################################
+## add in the best estimates - VIOLIN PLOT ##
+##############################################
 
 ggplot(popsizes, aes(x=Population, y=Individuals)) + 
   geom_violin(trim=FALSE, fill="pink") +
@@ -373,18 +416,42 @@ popsizes_thou$Individuals <- popsizes_thou$Individuals/1000
 pests_4 <- pests_3
 pests_4$Individuals <- pests_4$Individuals/1000
 
-pdf(file="Boot_out/croc_FSCboot_pop.pdf", width = 10, height = 10)
-png(filename = "Boot_out/croc_FSCboot_pop.png",width = 800, height = 800)
 pop.plot <- ggplot(popsizes_thou, aes(x=Population, y=Individuals)) + 
   geom_violin(trim=FALSE, fill="pink") +
   geom_point(data = pests_4, aes(x = Population, y = Individuals), size = 3, shape = 23, fill = "black") +
-  ylab("1,000 individuals") +
+  labs(y="Effective Population size \n (1,000 individuals)") +
   scale_y_continuous(breaks = seq(0, 550, by = 100), minor_breaks = seq(0 , 550, 50)) +
   xlab(NULL) +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text.x = element_text(face="bold", angle = 325, vjust=0.3)) 
+pop.plot
+
+dev.off()
+
+
+ggsave(
+  filename = paste0(plots_out_dir,"/FSCboot_pop.plot.png"),
+  width = 8.5, height = 7, dpi = 600,
+  device = "png", bg = "white", pop.plot
+)
+
+ggsave(
+  filename = paste0(plots_out_dir,"/FSCboot_pop.plot.pdf"),
+  width = 8.5, height = 7, dpi = 600,
+  device = "pdf", bg = "white", pop.plot
+)
+
+pdf(file="Boot_out/croc_FSCboot_pop.pdf", width = 10, height = 10)
 pop.plot
 dev.off()
 
+png(filename = "Boot_out/croc_FSCboot_pop.png",width = 800, height = 800)
+pop.plot
+dev.off()
+
+##############################
+## Put all 3 plots together ##
+##############################
 library(ggplot2)
 library(gridExtra)
 
@@ -396,6 +463,7 @@ p3 <- times.plot
 grid.arrange(pop.plot, mig.plot, times.plot, ncol=1)
 
 library(patchwork)
+
 # Labels for each plot
 pop.plot + mig.plot + times.plot + plot_annotation(tag_levels = "A") 
 
@@ -411,12 +479,31 @@ spacer <- ggplot() + theme_void()
 
 pdf(file="Boot_out/croc_FSCboot_all.pdf", width = 10, height = 10)
 png(filename = "Boot_out/croc_FSCboot_all.png",width = 800, height = 800)
-plot_grid(p1, spacer, p2, spacer, p3, ncol = 1, labels = c("A", "", "B", "", "C"), rel_heights = c(1, 0.1, 1, 0.1, 1))
+fsc.plots <- plot_grid(p1, spacer, p2, spacer, p3, ncol = 1, labels = c("A", "", "B", "", "C"), rel_heights = c(1, 0.1, 1, 0.1, 1))
 dev.off()
 
+pdf(file="Boot_out/croc_FSCboot_all.pdf", width = 10, height = 10)
+fsc.plots
+dev.off()
+
+png(filename = "Boot_out/croc_FSCboot_all.png",width = 800, height = 800)
+fsc.plots
+dev.off()
 
 # Use plot_grid with spacers between plots
 plot_grid(p1, spacer, p2, spacer, p3, ncol = 1, labels = c("A", "", "B", "", "C"), rel_heights = c(1, 0.1, 1, 0.1, 1))
+
+ggsave(
+  filename = paste0(plots_out_dir,"/FSCboot.plot.png"),
+  width = 10, height = 10, dpi = 300,
+  device = "png", bg = "white", fsc.plots
+)
+
+ggsave(
+  filename = paste0(plots_out_dir,"/FSCboot.plot.pdf"),
+  width = 10, height = 10, dpi = 600,
+  device = "pdf", bg = "white", fsc.plots
+)
 
 
 

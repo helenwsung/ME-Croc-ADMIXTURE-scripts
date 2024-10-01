@@ -11,33 +11,36 @@
 #### This should be effective for any number of populations (of course, assuming they're structured exactly the way I 
 ####      name things in FSC), including migration among ancestral populations
 
-
-
 library(dplyr)
 library(stringr)
 
-#### Specify the generation time
-gen_time <- 8
-gen_time <- 16.2
-
 ##### set up directories here
-# noreponly
-bestlhoods_dir <- "/datadir/filteredVCF/FastSimCoal2/best_L_allMods"
+data_dir <- getwd()
 
 # noreponly_v2 
-bestlhoods_dir <- "/datadir/filteredVCF_ab/fastsimcoal/best_L_allMods_16.2yr"
+
+## Clust K=3 pops
+#data_dir <- "/Users/hwsung/Library/CloudStorage/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab/fastsimcoal/Ad_k3_clust/Models_25"
+
+## pop90 K=3 pops
+data_dir <- "/Users/hwsung/Library/CloudStorage/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab/fastsimcoal/Ad_k3_pop90/Models_25"
+
+## best likelihood directory
+bestlhoods_dir <- paste0(data_dir, "/best_L_allMods")
 
 # name the output file for converted parameter estimates
-out_ests <- "noreponly_v2_16.2yr_pars_conv.csv"
-
-
-###########################################################################################################################################################
-### Convert parameter estimates - this works with relatively simple models that don't have migration between ancestral pops, that will complicate things
-############################################################################################################################################################
+out_ests <- "noreponly_v2_16.2yr_Ad.pop90_Mod.25_conv.csv"
 
 # set working directory
 setwd(bestlhoods_dir)
+list.files()
+###########################################################################################################################################################
+### Convert parameter estimates - this works with relatively simple models that don't have migration between ancestral pops, that will complicate things ##
+###########################################################################################################################################################
 
+#### Specify the generation time
+# gen_time <- 8
+gen_time <- 16.2
 
 ## List all of the .bestlhoods files
 files_lnl <- list.files(recursive=TRUE, pattern=".bestlhoods")
@@ -211,28 +214,28 @@ for(j in 1:length(mods_convert)){ # loop over the models doing the conversions w
 
 converted_table<-as.data.frame(do.call(bind_rows, converted_ests)) # combine into 1 big table
 rownames(converted_table)<-names(converted_ests) # add rownames onto it
+
 AIC_vals<-read.csv("FSC_model_Fits.csv") # read in the AIC values, use this to order the table ot estimates
 converted_table<-converted_table[gsub("\\.bestlhoods", "", AIC_vals[,1]),]
 vals_and_AIC<-cbind(AIC_vals[,c("AIC", "deltaAIC", "AICw")], converted_table) # combine the AIC values into it
 write.csv(vals_and_AIC, paste0(out_ests))
 
 
+################################################################################
+########################## Set up bootstrapping ################################
+################################################################################
 
-
-# ########################################################################################################################
-# ######   Set up bootstrapping                                                                                   ########
-# ########################################################################################################################
-#   
 ## set up files for parametric bootstrapping
 # set up an object with the location of bootstrap input stuff (i.e., stuff that will be used as input for bootstrap analyses)
-boot_in_dir<-"/datadir/filteredVCF_ab/fastsimcoal/boot_input"
+boot_in_dir<- paste0(data_dir, "/boot_input")
+
+if(!dir.exists(boot_in_dir)){ # check if the directory exists
+  dir.create(boot_in_dir)   # and create it if it does not
+}
 
 ## find out the number of SNPs in the input empirical joint SFS
-# Set the working directory to where the SFS that we used is - using for K=3 here
-setwd("/datadir//filteredVCF_ab/fastsimcoal/easySFS/noreponly_v2.filtered.75_16.2y_SFS/fastsimcoal2")
-
-# # read in the SFS file
-SFS_all<-readLines("noreponly_v2_MSFS.obs")
+# read in the SFS file used for FSC
+SFS_all<-readLines(paste0(data_dir, "/Models/noreponly_v2_MSFS.obs"))
 head(SFS_all)
 
 # remove the first couple lines, this is just header stuff
@@ -244,15 +247,30 @@ SFS_nums
 
 # sum these numbers to find the total number of SNPs - note this includes monomorphics
 num_SNPs<-round(sum(as.numeric(SFS_nums[[1]])), 0)
-num_SNPs # 36297
+num_SNPs 
+  # Ad_k3_pop90 ME version: 36297
+  # Ad_k3_pop90: 12301
+  # Ad_k3_clust: 37014
 
 ### This SFS has 36297 SNPs -- again, note that this includes monomorphics
 
  
-# read in each maxL_file change number of independent loci to the number of SNPs to make it ready for bootstrapping, write to where the bootstraps are
-# Commented out block below loops this for multiple models, here, I have strong support for a single model, so only going to boot that one model
-maxLfile<- "/datadir/filteredVCF_ab/fastsimcoal/Reps_16.2y/MallAsym_RecResize_CACM/bestrun/MallAsym_RecResize_CACM_maxL.par"
-  
+## Read in each maxL_file from "/Reps/"Model"/bestrun/model.par
+# change number of independent loci to the number of SNPs to make it ready for 
+# bootstrapping, write to where the bootstraps are
+# Commented out block below loops this for multiple models, here, I have strong 
+# support for a single model, so only going to boot that one model
+
+## Model: 
+AIC_vals$X[1]
+best.fit.model.name <- gsub(".bestlhoods", "", AIC_vals$X[1]) 
+
+## grab your "bestrun" from the "Reps" folder of your Model 
+## Model: MallAsym_Resize_CACM
+maxLfile<- paste0(data_dir, "/bestrun/",best.fit.model.name,"_maxL.par")
+
+# maxLfile<- "/datadir/filteredVCF_ab/fastsimcoal/Reps_16.2y/MallAsym_RecResize_CACM/bestrun/MallAsym_RecResize_CACM_maxL.par"
+
 par_to_edit<-readLines(maxLfile) # read in the file
 
 line_to_edit<-grep("Number of independent loci",par_to_edit)+1 # get the line number for the header, then add 1 to get the line we actually want to edit
@@ -267,15 +285,25 @@ setwd(boot_in_dir)
 
 writeLines(par_to_edit, basename(maxLfile)) # write this out to the new file
 
+## Set up the files from best model that need to be copied into the boot_in_dir:
+## get files from your FSC: "Reps/"Model"/bestrun/"
+pv_to_copy <- paste0(data_dir, "/MallAsym_RecResize_CACM/bestrun/","MallAsym_RecResize_CACM.pv")
+est_to_copy<- paste0(data_dir, "/MallAsym_RecResize_CACM/bestrun/","MallAsym_RecResize_CACM.est")
+tpl_to_copy<- paste0(data_dir, "/MallAsym_RecResize_CACM/bestrun/","MallAsym_RecResize_CACM.tpl")
+
+# Ad_k3_pop90
+pv_to_copy <- paste0(data_dir, "/bestrun/",best.fit.model.name, ".pv")
+est_to_copy<- paste0(data_dir, "/bestrun/",best.fit.model.name, ".est")
+tpl_to_copy<- paste0(data_dir, "/bestrun/",best.fit.model.name, ".tpl")
+
+file.copy(c(pv_to_copy, est_to_copy, tpl_to_copy), boot_in_dir) 
+
 ################################################################################################
 ## Then go use FSC to generate the bootstrap reps. Run the following commands in terminal:
 ################################################################################################
 #$ cd /Users/harrington/Active_Research/Ecotone_genomics/GBS_Data/FSC/boot_input
 #$ fsc26 -i MallAsym_RecResize_CACM_maxL.par -n100 -j -m -s0 -x –I -q -u
 ################################################################################################
-
-
-
 
 ### This is the old loop:
 # setwd(mods)  # set the working directory to where the models are
@@ -290,16 +318,12 @@ writeLines(par_to_edit, basename(maxLfile)) # write this out to the new file
 # }
 # 
 
-
-
 ## Set up the files that need to be copied into the boot_in_dir
-pv_to_copy<- "/datadir/filteredVCF_ab/fastsimcoal/Reps_16.2y/MallAsym_RecResize_CACM/bestrun/MallAsym_RecResize_CACM.pv"
-est_to_copy<- "/datadir/filteredVCF_ab/fastsimcoal/Reps_16.2y/MallAsym_RecResize_CACM/bestrun/MallAsym_RecResize_CACM.est"
-tpl_to_copy<- "/datadir/filteredVCF_ab/fastsimcoal/Reps_16.2y/MallAsym_RecResize_CACM/bestrun/MallAsym_RecResize_CACM.tpl"
+#pv_to_copy<- "/datadir/filteredVCF_ab/fastsimcoal/Reps_16.2y/MallAsym_RecResize_CACM/bestrun/MallAsym_RecResize_CACM.pv"
+#est_to_copy<- "/datadir/filteredVCF_ab/fastsimcoal/Reps_16.2y/MallAsym_RecResize_CACM/bestrun/MallAsym_RecResize_CACM.est"
+#tpl_to_copy<- "/datadir/filteredVCF_ab/fastsimcoal/Reps_16.2y/MallAsym_RecResize_CACM/bestrun/MallAsym_RecResize_CACM.tpl"
 
-
-
-file.copy(c(pv_to_copy, est_to_copy, tpl_to_copy), boot_in_dir) 
+#file.copy(c(pv_to_copy, est_to_copy, tpl_to_copy), boot_in_dir) 
 
 
 
