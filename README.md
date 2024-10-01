@@ -1,5 +1,5 @@
-# ME-AdmixtureCode
-Scripts for ME Manuscript titled: "Out with the old, introgression with the new: Signals of ancient and recent admixture in hybridizing Mesoamerican crocodiles (Crocodylus acutus x Crocodylus moreletii)"
+# ME-Croc-ADMIXTURE-scripts
+Scripts for Manuscript titled: "Out with the old, introgression with the new: Signals of ancient and recent admixture in hybridizing Mesoamerican crocodiles (Crocodylus acutus x Crocodylus moreletii)"
 
 # Files can be found on Data DRYAD: https://doi.org/10.5061/dryad.3bk3j9kt9
 
