@@ -20,7 +20,7 @@ module load lang/Python/3.9.6-GCCcore-11.2.0
 
 cd /datadirectory/
 
-VCF=/datadirectory/data/noreponly_v2.filtered.85.renamed.vcf.gz
+VCF=noreponly_v2.filtered.85.renamed.vcf.gz
 VCFFILE=$(basename $VCF)
 BASENAME=noreponly_v2.filtered.85.renamed
 
@@ -56,13 +56,13 @@ echo "Number of variables in the string: $word_count"
 ##########################################################################################
 ## Noreponly_v2 ##
 
-cd /home/hwsung/kantar_koastore/helen/analyses/datafiles/3RADmerged_noreponly/filteredVCF/ancestrypaint
+cd /data/directory/ancestrypaint
 
 # Set the name of the vcf file.
 # noreponly_v2
-VCF=/datadirectory/noreponly_v2.filtered.85.renamed.vcf
+VCF=noreponly_v2.filtered.85.renamed.vcf
 FILE=noreponly_v2.filtered.85
-OUT=/datadirectory/out/$FILE
+OUT=/out/$FILE
 
 ## Example test script on subset individuals ##
   ruby get_fixed_site_gts.rb $VCF ./data/$FILE.test1.txt ${CA_99_string} ${F1_Hybrid_string} ${CM_99_string} 0.8
@@ -87,14 +87,14 @@ OUT=/datadirectory/out/$FILE
 ##################
 
 # Set the name of the sample table based on admixture K3.
-table=/datadirectory/data/ad_cluster.pop.txt
+table=ad_cluster.pop.txt
 
 ################
 ## CA strings ## 
 ################
 
 # Define a list of 99% CA individuals (>99% CA, <.01 MCA, <.02 CM)
-table=/datadirectory/data/ad_cluster.pop.txt
+table=ad_cluster.pop.txt
 
 ## Define a list of 99% CA individuals (>99% CA, <.01 MCA, <.02 CM)
 CA_99_string=()
@@ -149,7 +149,7 @@ echo ${MCA_backcross_string}
 ####################
 
 # Define a list of >90% C.acutus individuals (>90% CA, >90% MCA, <1% CM)
-table=/datadirectory/data/acutuspopmap.txt
+table=acutuspopmap.txt
 
 acutus_90_string=()
 acutus_90_string=$(awk '$2 ~ /Acutus/ { printf("%s,", $1) } END { ORS=""; print "" }' "$table")
@@ -158,7 +158,7 @@ echo ${acutus_90_string}
     # acutus_90_string="CA.P3E10.CC,CA.P3B10.NC,MCA.P4G2.CB,CA.P3A11.CC,MCA.P3C11.STW,CA.P3D10.CC,CA.P3G10.CC,CA.P3F10.CC,MCA.P1F2.STW,CA.P2E8.CC,CA.P2F3.CC,CA.P1E12.NC,CA.P2E3.CC,MCA.P4C1.STW,CA.P2A3.CC,CA.P1H12.NC,CA.P1B12.NC,CA.P2C7.CC,CA.P3C9.NC,CA.PC11.NC,CA.P1A12.NC,CA.P1C12.NC,MCA.P3D11.STW,CA.PC10.NC,MCA.P1H2.STW,CA.P3G9.NC,CA.P1F12.NC,MCA.P1G8.CB,CA.P1G11.NC,CA.P3D9.NC,CA.P2C3.CC,CA.P2B3.CC,CA.P2G3.CC,CA.P2D7.CC,CA.P2B8.CC,CA.P1E11.NC,CA.P2G5.CC,CA.P3B9.NC,CA.P2G7.CC,MCA.P1C2.STW,MCA.P1D2.STW,MCA.P1E2.STW,MCA.P1E6.STW,MCA.P1F6.STW,MCA.P1G2.STW,MCA.P2H10.NA,MCA.P1G6.CB,MCA.P2B9.CB,HY.P1C4.CB,CA.P2F8.NC,CA.P2F2.NC,CA.P2C5.CC,CA.P3H9.NC,CA.P2B2.NC,CA.P2A5.CC,CA.P2B4.CC,CA.P2B7.CC,CA.P2C4.CC,CA.P2D2.NC,CA.P2E4.CC,CA.P2E5.CC,CA.P2E7.CC,CA.P2F4.CC,CA.P2F7.CC,CA.P2G4.CC,CA.P2G8.CC,CA.P2H5.NA,CA.P2H8.CC,CA.PC12.NC,CA.PC14.CC,CA.PC15.CC,CA.PC16.CC,CA.PC9.NC,MCA.P1B11.NRW"
     # removed=CA.P4B1.CC,CA.P2A4.CC,CA.P3H10.CC
     
-table=/datadirectory/data/ad_cluster.pop.txt
+table=ad_cluster.pop.txt
 acutus_backcross_string=()
 acutus_backcross_string=$(awk '$2 ~ /Acutus_backcross/  { printf("%s,", $1) } END { ORS=""; print "" }' "$table")
 acutus_backcross_string=${acutus_backcross_string%,}
@@ -213,9 +213,9 @@ echo ${F1_Hybrid_string}
 
 ######################################################################################################################################################
 ## Run each test comparison and put all results in "/output/ folder"    
-VCF=/datadirectory/data/noreponly_v2.filtered.85.renamed.vcf
+VCF=noreponly_v2.filtered.85.renamed.vcf
 FILE=noreponly_v2.filtered.85.renamed
-OUT=/datadirectory/out/$FILE
+OUT=/out/$FILE
 
 ## Figure 6: ACUTUS_99 -> CM_99
 # P1 <- "CM_99"

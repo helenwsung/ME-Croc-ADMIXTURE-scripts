@@ -14,7 +14,8 @@ library(poppr)
 ################################################################################
 ########################### Set working directory ##############################
 ################################################################################
-setwd("/datadir/filteredVCF_ab") 
+data_dir <- "your/data/dir/"
+setwd(data_dir) 
 
 list.files()
 
@@ -78,7 +79,7 @@ snp.meta(x)
 ################################################################################
 ## add population data ##
 # Population data
-md <- read_csv("admixture/popdata/popmap.csv")
+md <- read_csv("data/popmap.csv")
 md$Ad_cluster
 
 ## Subset populations 
