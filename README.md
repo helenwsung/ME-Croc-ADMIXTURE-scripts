@@ -1,8 +1,7 @@
 # ME-AdmixtureCode
 Scripts for ME Manuscript titled: "Out with the old, introgression with the new: Signals of ancient and recent admixture in hybridizing Mesoamerican crocodiles (Crocodylus acutus x Crocodylus moreletii)"
 
-# Files can be found on Data DRYAD
-https://doi.org/10.5061/dryad.3bk3j9kt9
+# Files can be found on Data DRYAD: https://doi.org/10.5061/dryad.3bk3j9kt9
 
 Scripts for running analyses and their respective input/output files. All scripts for running the analyses are given as is and need to be edited to match personal data directories and modified to your specific needs).
 
