@@ -15,7 +15,7 @@ Description of the data and folder structure:
    
         ipyradpipeline.sh - pipeline script to run trimming and ipyrad
 
-2. Filtering
+2. SNPfiltR
    
         SNPfiltR_filtering.R - R script for filtering ipyrad vcf file to working datasets and creating PCA & tSNE plots in Supplementary Figures S3-S4
    
