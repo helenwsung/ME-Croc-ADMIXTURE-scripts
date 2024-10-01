@@ -10,16 +10,19 @@ NOTE: In all scripts and data files, 'Sampling localities' in the main manuscri
 Description of the data and folder structure: 
 
 1. ipyrad
+
         params-noreponly_v2.txt - input parameter file used for SNP calling and genotyping in ipyrad
    
         ipyradpipeline.sh - pipeline script to run trimming and ipyrad
 
-3. Filtering 
+2. Filtering
+   
         SNPfiltR_filtering.R - R script for filtering ipyrad vcf file to working datasets and creating PCA & tSNE plots in Supplementary Figures S3-S4
    
         LDpruning_Dataconversion.R - R script for LD pruning filtered vcf files and creating subsetted VCF files 
 
-5. PopulationStats_Admixture
+3. PopulationStats_Admixture
+   
         ADMIXTURE.sh - pipeline & script for running ADMIXTURE analyses
    
         admixture_k3_pops - folder of text files for samples in each population group created from ADMIXTURE K3
@@ -34,7 +37,8 @@ Description of the data and folder structure:
    
         PopGenStats.R - R script for generating population diversity statistics
 
-7. FSC2 
+4. FSC2
+   
         FSC2.sh - Pipeline for running Fastsimcoal2 script (need additional scripts to run, descriptions in text)
    
             FS_FixRootTime_K3_Mods.slurm
@@ -61,12 +65,14 @@ Description of the data and folder structure:
    
         noreponly_v2.75.renamed.LDpruned.popmap90.txt - input popmap file for running FSC2
 
-9. LD
+5. LD
+   
        PlinkLD.sh - generating LD files using Plink
    
         LDscript.R - Rscript for generating LD decay plots
    
-11. AncestryPaint_abbababa
+6. AncestryPaint_abbababa
+   
         AncestryPainting.sh - script for generating Ancestry painting plots
     
         snpRabbababa.R - Rscript for ABBA-BABA analyses
