@@ -14,21 +14,18 @@ library(vcfR)
 ################################################################################
 
 ## Working Directory ##
-data_dir <- "/datadir/" 
+data_dir <- "/data/dir/" 
 #data_dir <- getwd()
 data_dir
 
 basefile <- "noreponly_v2"
 
 ## Output Directory ##
-filteredVCF <- paste0(data_dir, "/filteredVCF_ab")
+filteredVCF <- paste0(data_dir, "/filteredVCF")
 filteredVCF
 
 if(!dir.exists(filteredVCF)){ # check if the directory exists
   dir.create(filteredVCF)  } # and create it if it does not
-
-# norep_nolowloci: All 3RADmerged samples excluding repeated individuals and indiv. with low loci - 256 individuals ##
-#basefile <- "norep_nolowloci"
 
 ################################################################################
 ## Set as our working directory ##
@@ -43,7 +40,7 @@ setwd(data_dir)
 #md_csv<-paste0(data_dir,"/", basefile,"_metadata.csv")
 
 #md <- read_csv(md_csv)
-md <- read_csv("/home/hwsung/lus_scratch/R_data/noreponly_v2/noreponly_metadata.csv")
+md <- read_csv("noreponly_metadata_fixed.csv")
 names(md)
   
 # make dataframe for 'population' later

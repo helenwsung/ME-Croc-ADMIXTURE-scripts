@@ -16,22 +16,21 @@ library(ape)
 ################################################################################
 ########################### Set working directory ##############################
 ################################################################################
-setwd("/datadir/filteredVCF_ab") 
-list.files("data/")
+setwd("/Filtering/filteredVCF") 
 
 ################################################################################
 ############################## Load data files #################################
 ################################################################################
 # VCF file 
-vcffile <- "data/noreponly_v2.filtered.85.vcf.gz"   # input 
-vcffile <- "data/noreponly_v2.filtered.75.vcf.gz"   # input 
+vcffile <- "noreponly_v2.filtered.85.vcf.gz"   # input 
+vcffile <- "noreponly_v2.filtered.75.vcf.gz"   # input 
 
 vcf <- read.vcfR(vcffile)
 vcf
 
 # GDS file
-gdsfile <- "data/noreponly_v2.75.renamed.gds" # what to write it as 
-gdsfile <- "data/noreponly_v2.85.renamed.gds" # what to write it as 
+gdsfile <- "noreponly_v2.75.renamed.gds" # what to write it as 
+gdsfile <- "noreponly_v2.85.renamed.gds" # what to write it as 
 
 # SNPrelate VCF to GDS file 
 snpgdsVCF2GDS(vcffile, gdsfile, method="biallelic.only")
@@ -256,7 +255,7 @@ head(geno)
 
 
 ## export 
-LDpruned_subset <- "data/noreponly_v2.filtered.85.renamed.LDpruned.gds"
+LDpruned_subset <- "noreponly_v2.filtered.85.renamed.LDpruned.gds"
 seqExport(gds, LDpruned_subset)
 
 seqResetFilter(gds) 
@@ -266,9 +265,9 @@ seqClose(gds)
 (LDpruned.gds <- seqOpen(LDpruned_subset))
 
 # convert to vcf
-seqGDS2VCF(LDpruned.gds, "data/noreponly_v2.filtered.85.renamed.withref.LDpruned.vcf.gz")
+seqGDS2VCF(LDpruned.gds, "noreponly_v2.filtered.85.renamed.LDpruned.vcf.gz")
 
-vcffile <- "data/noreponly_v2.85.renamed.LDpruned.vcf.gz"  # input 
+vcffile <- "noreponly_v2.85.renamed.LDpruned.vcf.gz"  # input 
 vcf <- read.vcfR(vcffile)
 
 # Try different LD thresholds for sensitivity analysis
@@ -280,11 +279,13 @@ names(snpset)
 snpset.id <- unlist(unname(snpset))
 head(snpset.id)
 
-###
 
 ################################################################################
 ################## Converting between Other Genomic filetypes  #################
 ################################################################################
+### Extra steps if you want individual data files based on subsets
+################################################################################
+
 # read vcffile 
 vcf <- read.vcfR(vcffile)
 gendata_gl<-vcfR2genlight(vcf) 
@@ -297,18 +298,19 @@ df.geno <- gl2geno(gendata_gl, outfile = "filename", outpath = "data/outpath/")
 ################################################################################
 ## Subset Data by ADMIXTURE Sample Groups ## 
 
-gdsfile <- "/filteredVCF_ab/data/noreponly_v2.75.renamed.gds"
+gdsfile <- "noreponly_v2.75.renamed.gds"
 
 ## open a connection to the GDS file - SeqArray Package 
 gds <- seqOpen(gdsfile, readonly = FALSE)
 gds
 
-setwd("/filteredVCF_ab/")
+setwd("/filteredVCF/")
 ################################################################################
 ################# Subset metadata by Popmap - Admixture Groups #################
 ################################################################################
-# Metadata file
-md <- read_csv("PopulationStats_Admixture/popmap.csv")
+# Metadata file:
+### NOTE: Sampling Localities are under "Monitoring.Unit" in scripts and files: 
+md <- read_csv("PopulationStats_Admixture/admixture_k3_pops/popmap.csv")
 md$Ad_cluster
 
 ## Subset by population ##
