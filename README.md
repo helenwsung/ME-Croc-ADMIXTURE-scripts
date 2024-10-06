@@ -76,53 +76,8 @@ Description of the data and folder structure:
     
         snpRabbababa.R - R script for ABBA-BABA analyses
 
-noreponly_metadata_fixed.csv - metadata file for all 273 samples. 
-        # Definition of columns for metadata in noreponly_metadata_fixed.csv:
-                Sample - Unique Sample ID used for analyses
-                Seq_ID - Unique Sequencer ID 
-                CrocID - Unique individual ID combining Mark Code and Morph_Species
-                Longitude - EDITED Longitude value**	
-                Latitude - EDITED Latitude value**		
-                Capture_Date - Capture date by date-month-year	
-                Monitoring.Unit	- Sampling locality 
-                Abbrv_Monitoring.Unit - Abbreviation for Monitoring.Unit 
-                Subdivision	- District in Belize
-                Water Temp (C) - Water temperature (celcius)
-                Air Temp (C) - Air temperature (celcius)	
-                Salinity (ppt) - Water Salinity (parts per thousand)	
-                pH - water pH
-                Mark Code - Unique mark code for sampled individual 	
-                Morph_Species - Morphological species group	
-                Size Class - Size class (Adult, Subadult, Juvenile, Hatchling) 	
-                Sex 
-                HL (cm)	- Head length (centimeters)
-                SL (cm)	- Snout length (centimeters)
-                CW (cm)	- Cranial width (centimeters)
-                MAX W (cm) - Maxilary Width (centimeters)
-                PMax W (cm)	- Premaxilary width (centimeters)
-                POb L (cm) - Preorbital length (centimeters)	
-                POb W (cm) - Preorbital width (centimeters)	
-                TL (cm)	- Total length (centimeters)
-                SVL (cm) - Snout vent length (centimeters)	
-                TW (cm)	- Tail width (centimeters)
-                HF (cm)	- Hind Right foot lenth (centimeters)
-                Weight (kg)	- Weight (kilograms)
-                Paratrichosoma - Presence/Absence for Paratrichosoma 
-                Tail Condition 
-                Skin Condition	
-                Musculature Condition	
-                Teeth Condition	
-                Skeletal Structure	
-                Nuchal Photo	
-                Post-Occiptal	
-                Nuchal Scutes	
-                Post-Occipital/Nuchal Pattern	
-                Transverse Rows	
-                Double Whorls	
-                Single Whorls	
-                Notes	
-                Wounds
+8. noreponly_metadata_fixed.csv - metadata file for all 273 samples.
 
-        ** NOTE: In order to preserve sensitive occurence data for threatened/at-risk species, we generalized the precision of the geographic coordinates (Lat/Long) by reducing the number of decimal places to 0.1 decimal degrees as recommended by Guide to Best Practices for Generalising Sensitive Species Occurrence Data [Chapman AD (2020) Current Best Practices for Generalizing Sensitive Species Occurrence Data. Copenhagen: GBIF Secretariat. https://doi.org/10.15468/doc-5jp4-5g10.]. Please contact the corresponding author Helen Sung (hwsung@hawaii.edu) if you would like to request this data. 
+           ** NOTE: To preserve sensitive occurrence data for threatened/at-risk species, we generalized the precision of the geographic coordinates (Lat/Long) by reducing the number of decimal places to 0.1 decimal degrees as recommended by the Guide to Best Practices for Generalising Sensitive Species Occurrence Data [Chapman AD (2020) Current Best Practices for Generalizing Sensitive Species Occurrence Data. Copenhagen: GBIF Secretariat. https://doi.org/10.15468/doc-5jp4-5g10.]. To request this data, please contact the corresponding author Helen Sung (hwsung@hawaii.edu). 
 
         
