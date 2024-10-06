@@ -18,10 +18,9 @@ library(ggplot2)
 library(scales)
 
 ###########################################################################################################################
-## noreponly_v2: All 3RADmerged samples with no repeats - 273 individuals ##
+## noreponly_v2: All samples with no repeats - 273 individuals ##
 # For filtered through snpFiltR data 
-data_dir <- "/Users/hwsung/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab" 
-data_dir <- "Your/data/directory/"
+data_dir <- "/PopulationStats_Admixture"
 
 ## Set working directory ##
 setwd(data_dir)
@@ -31,7 +30,7 @@ setwd(data_dir)
 
 ## add population data ##
 # Population data
-md <- read_csv("admixture/popdata/popmap_md.csv")
+md <- read_csv("/admixture_k3_pops/popmap.csv")
 md$Ad_cluster
 md
 
@@ -88,17 +87,8 @@ pops$sNMF_cluster <- gsub("Hybrid_CA_backcross", "Hybrid_acutus_B", pops$sNMF_cl
 pops$sNMF_cluster <- gsub("Hybrid_CM_backcross", "Hybrid_moreletii", pops$sNMF_cluster) 
 as.factor(pops$sNMF_cluster)
 
-#pops$Morph_Species <- gsub("MCA", "acutus_Mainland", pops$Morph_Species) 
-#pops$Morph_Species <- gsub("CA", "acutus_Cayes", pops$Morph_Species) 
-#pops$Morph_Species <- gsub("CM", "moreletii", pops$Morph_Species) 
-#pops$Morph_Species <- gsub("HY", "Hybrid", pops$Morph_Species) 
-#as.factor(pops$Morph_Species)
-
 ################################################################################
 ################################################################################
-out_dir <- paste0(data_dir, "/PCA")
-out_dir
-
 basefile <- "noreponly_v2.75.renamed.LDpruned"
 
 vcf_gds <-paste0(out_dir,"/", basefile,".gds")
@@ -106,7 +96,7 @@ vcf_gds
 
 ## noreponly_v2 PCA
 # genofile used for admixture 
-path_vcf <- "/Users/hwsung/Library/CloudStorage/Dropbox/Dissertation/DATA/3RADmerged/ipyrad_results/noreponly_v2/filteredVCF_ab/data/noreponly_v2.75.renamed.LDpruned.vcf.gz"
+path_vcf <- "/Filtering/filteredVCF/noreponly_v2.75.renamed.LDpruned.vcf.gz"
 
 ## convert to GDS format for SNPRelate analysis
 #snpgdsVCF2GDS(path_vcf, vcf_gds, method="biallelic.only",ignore.chr.prefix="Chr")
@@ -160,10 +150,14 @@ sNMF_sp <- matches$sNMF_cluster
 mont.unit <- matches$Monitoring.Unit
 ################################################################################
 ## Set out directory ##
-out_dir <- paste0(data_dir, "/PCA/ME Figures")
+out_dir <- paste0(data_dir, "/PCA/")
+
+if(!dir.exists(out_dir)){ # check if the directory exists
+  dir.create(out_dir)   # and create it if it does not
+}
+
 setwd(out_dir)
 list.files(out_dir)
-
 ################################################################################
 ## PCA by Morphological Species ##
 

@@ -1,8 +1,6 @@
 ################################################################################
 ####################### Population genetic summary statistics ##################
 ################################################################################
-## From Salter et al 2023 - SUPP material ##
-################################################################################
 ## Load libraries 
 library(adegenet)
 library(hierfstat)
@@ -12,10 +10,20 @@ library(tidyr)
 library(dplyr)
 ################################################################################
 # set working directory
-setwd("/datadir/filteredVCF_ab/diversity_stats")
+data_dir <- "/your/data/dir/"
+
+setwd(data_dir)
+
+# Create out directory 
+out_dir <- paste0(data_dir, "/PopulationStats_Admixture/diversity_stats") 
+
+if(!dir.exists(out_dir)){ # check if the directory exists
+  dir.create(out_dir)   # and create it if it does not
+}
+
 ################################################################################
 # Read vcf into genlight format
-vcffile <- "data/noreponly_v2.filtered.85.renamed.vcf.gz"   # input
+vcffile <- "/Filtering/filteredVCF/noreponly_v2.filtered.85.vcf.gz"   
 vcf <- read.vcfR(vcffile)
 
 # convert vcf to genind
@@ -27,7 +35,8 @@ indNames(genind_data)
 ####################### Add in population information ##########################
 ################################################################################
 # Metadata file
-md <- read_csv("/filteredVCF_ab/admixture/popdata/popmap.csv")
+### NOTE: Sampling Localities are under "Monitoring.Unit" in scripts and files: 
+md <- read_csv("/PopulationStats_Admixture/admixture_k3_pops/popmap.csv")
 md$Ad_cluster
 
 ## Subset by population ##
@@ -45,16 +54,6 @@ CM_NRW <- pure_morelets %>%
 CM_notNRW <- pure_morelets %>% 
   filter(!grepl("NRW", Abbrv_Monitoring.Unit, ignore.case = TRUE))
 
-# CA
-CA_99 <- md %>%
-  filter(grepl("CA_99", Ad_cluster, ignore.case = TRUE))
-CA_90 <- md %>%
-  filter(grepl("CA_90", Ad_cluster, ignore.case = TRUE))
-CA <- md %>% 
-  filter(Ad_cluster %in% c("CA_90", "CA_99") & !Ad_cluster %in% c("MCA_90", "MCA_99"))
-All_CA <- md %>% 
-  filter(Ad_cluster %in% c("CA_90", "CA_99","Hybrid_CA_backcross") & !Ad_cluster %in% c("MCA_90", "MCA_99"))
-
 # MCA
 MCA_99 <- md %>%
   filter(grepl("MCA_99", Ad_cluster, ignore.case = TRUE))
@@ -64,6 +63,16 @@ MCA <- md %>%
   filter(Ad_cluster %in% c("MCA_90", "MCA_99"))
 All_MCA <- md %>% 
   filter(grepl("MCA", Ad_cluster, ignore.case = TRUE))
+
+# CA
+CA_99 <- md %>%
+  filter(grepl("CA_99", Ad_cluster, ignore.case = TRUE))
+CA_90 <- md %>%
+  filter(grepl("CA_90", Ad_cluster, ignore.case = TRUE))
+CA <- md %>% 
+  filter(Ad_cluster %in% c("CA_90", "CA_99") & !Ad_cluster %in% c("MCA_90", "MCA_99"))
+All_CA <- md %>% 
+  filter(Ad_cluster %in% c("CA_90", "CA_99","Hybrid_CA_backcross") & !Ad_cluster %in% c("MCA_90", "MCA_99"))
 
 # Acutus
 All_acutus <- md %>% 
@@ -109,7 +118,8 @@ desired_samples <- pop$Sample
 subset_genind <- genind_data[indNames(genind_data) %in% desired_samples,]
 subset_genind 
 
-# Assuming all samples matched and there are no NAs, you can now update the population information in your genind object
+# Assuming all samples matched and there are no NAs, you can now update the 
+#     population information in your genind object
 subset_genind$pop <- factor(pop$Ad_cluster)
 population <- pop(subset_genind)
 table(population)
@@ -255,7 +265,7 @@ combined_df <- rbind(mean_Hobs_K3, mean_Hess_K3, mean_AR_K3, mean_Fis_K3)
 
 # Now combined_df is a combined data frame where columns are "CA", "MCA", and "CM", and rows are the mean values for Hobs, Hess, AR, and Fis
 print(combined_df)
-write.csv(combined_df, file = "out/divstats_k3.csv")
+write.csv(combined_df, file = paste0(out_dir,"/divstats_k3.csv"))
 
 ## for K=2
 # Set row names for each data frame
@@ -269,7 +279,7 @@ combined_df <- rbind(mean_Hobs_K2, mean_Hess_K2, mean_AR_K2, mean_Fis_K2)
 
 # Now combined_df is a combined data frame where columns are "CA", "MCA", and "CM", and rows are the mean values for Hobs, Hess, AR, and Fis
 print(combined_df)
-write.csv(combined_df, file = "out/divstats_K2.csv")
+write.csv(combined_df, file = paste0(out_dir,"/divstats_K2.csv"))
 
 ################################################################################
 ####################### Nucleotide diversity from VCFtools #####################
@@ -442,6 +452,9 @@ waterson.theta <- function(data, perBP=TRUE) {
 }
 
 ################################################################################
+## get individually subsetted VCF files w/ LDpruning_Dataconversion.R ##
+setwd("/Filtering/filteredVCF/subset_data/")
+
 ## Load VCF files ## 
 pure_acutus_vcf <- "noreponly_v2.75.renamed.pure_acutus.vcf.gz"
 pure_morelet_vcf <- "noreponly_v2.75.renamed.pure_CM.vcf.gz"
@@ -473,6 +486,8 @@ dim(my.data)
 ################################################################################
 ## https://popgen.nescent.org/DifferentiationSNP.html#observed-and-expected-heterozygosity-f_st ##
 ################################################################################
+setwd(out_dir)
+
 ## Set up Genind objects ## 
 
 ############################
@@ -586,22 +601,15 @@ test.between(loci, test.lev = population, rand.unit = MU, nperm = 100)
 
 ## Pairwise Fst
 genet.dist(RAD, method = "WC84")
-################################################################################
-################################################################################
-## 1: Calculating F-statistics ##
-################################################################################
-################################################################################
-data_dir <- "/filteredVCF"
-setwd(data_dir)
-getwd()
-list.files()
 
-basefile <- "noreponly_v2"
-####################################################################################
-## 1: Calculating F-statistics ##
+################################################################################
+################################################################################
+################# Other Methods for Calculating F-statistics ###################
+################################################################################
+################################################################################
+## From Physalia workshop script 
 ####################################################################################
 ## want to have data that is NOT LDpruned 
-setwd("filtered.75")
 setwd(data_dir)
 list.files()
 
