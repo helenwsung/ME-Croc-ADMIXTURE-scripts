@@ -66,18 +66,20 @@ Description of the data and folder structure:
            noreponly_v2.75.renamed.LDpruned.popmap90.txt - input popmap file for running FSC2
 
 6. LD
+   
        PlinkLD.md - instructions for running the pipeline and scripts to generate the LD files using Plink
    
        LDscript.R - Rscript for generating LD decay plots
    
-7. AncestryPaint_abbababa
+8. AncestryPaint_abbababa
    
         AncestryPainting.md - instructions for the pipeline and scripts used to generate the Ancestry painting plots
     
         snpRabbababa.R - R script for ABBA-BABA analyses
 
-8. noreponly_metadata_fixed.csv - metadata file for all 273 samples.
+9. noreponly_metadata_fixed.csv - metadata file for all 273 samples.
 
-           ** NOTE: To preserve sensitive occurrence data for threatened/at-risk species, we generalized the precision of the geographic coordinates (Lat/Long) by reducing the number of decimal places to 0.1 decimal degrees as recommended by the Guide to Best Practices for Generalising Sensitive Species Occurrence Data [Chapman AD (2020) Current Best Practices for Generalizing Sensitive Species Occurrence Data. Copenhagen: GBIF Secretariat. https://doi.org/10.15468/doc-5jp4-5g10.]. To request this data, please contact the corresponding author Helen Sung (hwsung@hawaii.edu). 
+
+** NOTE: To preserve sensitive occurrence data for threatened/at-risk species, we generalized the precision of the geographic coordinates (Lat/Long) by reducing the number of decimal places to 0.1 decimal degrees as recommended by the Guide to Best Practices for Generalising Sensitive Species Occurrence Data [Chapman AD (2020) Current Best Practices for Generalizing Sensitive Species Occurrence Data. Copenhagen: GBIF Secretariat. https://doi.org/10.15468/doc-5jp4-5g10.]. To request this data, please contact the corresponding author Helen Sung (hwsung@hawaii.edu). 
 
         
