@@ -14,14 +14,13 @@ library(vcfR)
 ################################################################################
 
 ## Working Directory ##
-data_dir <- "/data/dir/" 
-#data_dir <- getwd()
-data_dir
+data_dir <- "/your/data/dir/" 
+
 
 basefile <- "noreponly_v2"
 
 ## Output Directory ##
-filteredVCF <- paste0(data_dir, "/filteredVCF")
+filteredVCF <- paste0(data_dir, "/Filtering/filteredVCF")
 filteredVCF
 
 if(!dir.exists(filteredVCF)){ # check if the directory exists
@@ -34,19 +33,26 @@ setwd(data_dir)
 ################################################################################
 ## File Paths ##
 ## Ipyrad output vcf ##
-#path_vcf<-paste0(data_dir,"/", basefile,".vcf.gz")
+path_vcf<-paste0(data_dir,"/ipyrad/ipyrad_output/", basefile,".vcf.gz")
   
 ## Get in MetaData ## 
-#md_csv<-paste0(data_dir,"/", basefile,"_metadata.csv")
-
-#md <- read_csv(md_csv)
 md <- read_csv("noreponly_metadata_fixed.csv")
 names(md)
   
 # make dataframe for 'population' later
 glimpse(md)
 md
-pops <- md %>% dplyr::select(CrocID, New_ID, Sample, Morph_Species, Longitude, Latitude, Monitoring.Unit, Abbrv_Monitoring.Unit, Route, Site, Subdivision)
+pops <- md %>% dplyr::select(Sample, 
+                             Seq_ID, 
+                             CrocID,
+                             Longitude, 
+                             Latitude, 
+                             Monitoring.Unit, 
+                             Abbrv_Monitoring.Unit, 
+                             Route, 
+                             Site, 
+                             Subdivision, 
+                             Morph_Species)
 pops
 names(pops)
 
@@ -86,7 +92,7 @@ dim(popmap_mont.unit)
 popmap_morphsp<-popmap_morphsp[popmap_morphsp$id %in% colnames(vcfR@gt),]
 dim(popmap_morphsp)
 
-# run function to visualize samples
+# run function to visualize samples and save as pdf
 pdf("SNPfilt_missing_by_sample.pdf")
 missing_by_sample(vcfR=vcfR, popmap = popmap_mont.unit)
 missing_by_sample(vcfR=vcfR, popmap = popmap_morphsp)
@@ -170,7 +176,7 @@ dev.off()
 
 ################################################################################
 ## Reran Steps 1-3: ## 
-#run function to visualize samples and return informative data.frame object
+# run function to visualize samples and return informative data.frame object
 pdf("SNPfilt_missing_by_sample_step3_ab.pdf")
 miss<-missing_by_sample(vcfR=vcfR)
 missing_by_sample(vcfR=vcfR, popmap = popmap_morphsp)
@@ -246,7 +252,7 @@ filt<-miss[miss$filt == .8,]
 filt[order(filt$snps.retained),]
 
 # drop the samples with an excess of missing data at an 80% SNP completeness threshold
-vcfR<- vcfR[,colnames(vcfR@gt) != "HS_P1_A11" & colnames(vcfR@gt) != "HS_P4_F1" & colnames(vcfR@gt) != "HS_P1_F9"]
+# vcfR<- vcfR[,colnames(vcfR@gt) != "HS_P1_A11" & colnames(vcfR@gt) != "HS_P4_F1" & colnames(vcfR@gt) != "HS_P1_F9"]
 
 #remove invariant SNPs
 vcfR<-min_mac(vcfR, min.mac = 1)

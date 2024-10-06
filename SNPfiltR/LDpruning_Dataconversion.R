@@ -279,13 +279,11 @@ names(snpset)
 snpset.id <- unlist(unname(snpset))
 head(snpset.id)
 
-
 ################################################################################
 ################## Converting between Other Genomic filetypes  #################
 ################################################################################
 ### Extra steps if you want individual data files based on subsets
 ################################################################################
-
 # read vcffile 
 vcf <- read.vcfR(vcffile)
 gendata_gl<-vcfR2genlight(vcf) 
@@ -293,24 +291,12 @@ gendata_gl<-vcfR2genlight(vcf)
 ## dartR - Genlight to genofile (.geno) ##
 df.geno <- gl2geno(gendata_gl, outfile = "filename", outpath = "data/outpath/")
 
-
-################################################################################
-################################################################################
-## Subset Data by ADMIXTURE Sample Groups ## 
-
-gdsfile <- "noreponly_v2.75.renamed.gds"
-
-## open a connection to the GDS file - SeqArray Package 
-gds <- seqOpen(gdsfile, readonly = FALSE)
-gds
-
-setwd("/filteredVCF/")
 ################################################################################
 ################# Subset metadata by Popmap - Admixture Groups #################
 ################################################################################
 # Metadata file:
 ### NOTE: Sampling Localities are under "Monitoring.Unit" in scripts and files: 
-md <- read_csv("PopulationStats_Admixture/admixture_k3_pops/popmap.csv")
+md <- read_csv("/PopulationStats_Admixture/admixture_k3_pops/popmap.csv")
 md$Ad_cluster
 
 ## Subset by population ##
@@ -378,6 +364,7 @@ Acutus_backcross <- md %>%
   filter(grepl("Acutus_backcross", Ad_cluster, ignore.case = TRUE))
 
 # Subset population file to only include retained individuals
+
 ################################################################################
 ################# Subset metadata by Monitoring Unit/Morph Sp ##################
 ################################################################################
@@ -443,112 +430,120 @@ tibble_list <- list(
   NA.mu = NA.mu)
 #tibble_list <- list(BRW,CB,CC, CF,NBDW,NC, NRW,NSLW,NTW,RHW,STW,NA.mu)
 ################################################################################
+######################### Make subset gds and vcf data #########################
 ################################################################################
-## Make subset gds and vcf data ##
+gdsfile <- "noreponly_v2.75.renamed.gds"
+
+## open a connection to the GDS file - SeqArray Package 
+gds <- seqOpen(gdsfile, readonly = FALSE)
+gds
+
 ################################################################################
-CM.gds <- "data/noreponly_v2.75.renamed.pure_CM.gds"
+## Create each subset file in a new folder named "subset_data" 
+
+CM.gds <- "subset_data/noreponly_v2.75.renamed.pure_CM.gds"
 CM.gds <- seqSetFilter(gds, sample.id=pure_morelets$Sample, ret.idx=TRUE)  
 seqExport(gds, CM.gds)
 ## open a connection to the GDS file - SeqArray Package 
 gds <- seqOpen(CM.gds, readonly = FALSE)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.pure_CM.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.pure_CM.vcf.gz")
 seqResetFilter(gds) 
 
-all.CM.gds <- "data/noreponly_v2.75.renamed.all_CM.gds"
+all.CM.gds <- "subset_data/noreponly_v2.75.renamed.all_CM.gds"
 seqSetFilter(gds, sample.id=All_CM$Sample)  
 seqExport(gds, all.CM.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.All_CM.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.All_CM.vcf.gz")
 seqResetFilter(gds) 
 
-CA.gds <- "data/noreponly_v2.75.renamed.pure_CA.gds"
+CA.gds <- "subset_data/noreponly_v2.75.renamed.pure_CA.gds"
 seqSetFilter(gds, sample.id=CA$Sample)  
 seqExport(gds, CA.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.pure_CA.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.pure_CA.vcf.gz")
 seqResetFilter(gds) 
-vcf <- read.vcfR("data/noreponly_v2.75.renamed.pure_CA.vcf.gz")
+vcf <- read.vcfR("subset_data/noreponly_v2.75.renamed.pure_CA.vcf.gz")
 vcf 
 
-all.CA.gds <- "data/noreponly_v2.75.renamed.all_CA.gds"
+all.CA.gds <- "subset_data/noreponly_v2.75.renamed.all_CA.gds"
 seqSetFilter(gds, sample.id=All_CA$Sample)  
 seqExport(gds, all.CA.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.All_CA.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.All_CA.vcf.gz")
 seqResetFilter(gds) 
 
-pure.acutus.gds <- "data/noreponly_v2.75.renamed.pure_acutus.gds"
+pure.acutus.gds <- "subset_data/noreponly_v2.75.renamed.pure_acutus.gds"
 seqSetFilter(gds, sample.id=Acutus_90$Sample)  
 seqExport(gds, pure.acutus.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.pure_acutus.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.pure_acutus.vcf.gz")
 seqResetFilter(gds) 
 
-MCA.gds <- "data/noreponly_v2.75.renamed.pure_MCA.gds"
+MCA.gds <- "subset_data/noreponly_v2.75.renamed.pure_MCA.gds"
 seqSetFilter(gds, sample.id=MCA$Sample)  
 seqExport(gds, MCA.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.pure_MCA.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.pure_MCA.vcf.gz")
 seqResetFilter(gds) 
 
-all.MCA.gds <- "data/noreponly_v2.75.renamed.all_MCA.gds"
+all.MCA.gds <- "subset_data/noreponly_v2.75.renamed.all_MCA.gds"
 seqSetFilter(gds, sample.id=All_MCA$Sample)  
 seqExport(gds, all.MCA.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.All_MCA.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.All_MCA.vcf.gz")
 seqResetFilter(gds) 
 
-acutus.gds <- "data/noreponly_v2.75.renamed.all_Acutus.gds"
+acutus.gds <- "subset_data/noreponly_v2.75.renamed.all_Acutus.gds"
 seqSetFilter(gds, sample.id=All_acutus$Sample)  
 seqExport(gds, acutus.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.All_Acutus.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.All_Acutus.vcf.gz")
 seqResetFilter(gds) 
 
-All_Hybrid.gds <- "data/noreponly_v2.75.renamed.All_Hybrid.gds"
+All_Hybrid.gds <- "subset_data/noreponly_v2.75.renamed.All_Hybrid.gds"
 seqSetFilter(gds, sample.id=All_hybrid$Sample)  
 seqExport(gds, All_Hybrid.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.All_Hybrid.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.All_Hybrid.vcf.gz")
 seqResetFilter(gds) 
 
-F1_Hybrid.gds <- "data/noreponly_v2.75.renamed.F1_Hybrid.gds"
+F1_Hybrid.gds <- "subset_data/noreponly_v2.75.renamed.F1_Hybrid.gds"
 seqSetFilter(gds, sample.id=F1_Hybrid$Sample)  
 seqExport(gds, F1_Hybrid.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.F1_Hybrid.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.F1_Hybrid.vcf.gz")
 seqResetFilter(gds) 
 
-Hybrid_CM_backcross.gds <- "data/noreponly_v2.75.renamed.Hybrid_CM_backcross.gds"
+Hybrid_CM_backcross.gds <- "subset_data/noreponly_v2.75.renamed.Hybrid_CM_backcross.gds"
 seqSetFilter(gds, sample.id=Hybrid_CM_backcross$Sample)  
 seqExport(gds, Hybrid_CM_backcross.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.Hybrid_CM_backcross.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.Hybrid_CM_backcross.vcf.gz")
 seqResetFilter(gds) 
 
-Hybrid_CA_backcross.gds <- "data/noreponly_v2.75.renamed.Hybrid_CA_backcross.gds"
+Hybrid_CA_backcross.gds <- "subset_data/noreponly_v2.75.renamed.Hybrid_CA_backcross.gds"
 seqSetFilter(gds, sample.id=Hybrid_CA_backcross$Sample)  
 seqExport(gds, Hybrid_CA_backcross.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.Hybrid_CA_backcross.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.Hybrid_CA_backcross.vcf.gz")
 seqResetFilter(gds) 
 
-Hybrid_MCA_backcross.gds <- "data/noreponly_v2.75.renamed.Hybrid_MCA_backcross.gds"
+Hybrid_MCA_backcross.gds <- "subset_data/noreponly_v2.75.renamed.Hybrid_MCA_backcross.gds"
 seqSetFilter(gds, sample.id=Hybrid_MCA_backcross$Sample)  
 seqExport(gds, Hybrid_MCA_backcross.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.Hybrid_MCA_backcross.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.Hybrid_MCA_backcross.vcf.gz")
 seqResetFilter(gds) 
 
-Hybrid_25.75.gds <- "data/noreponly_v2.75.renamed.Hybrid_25.75.gds"
+Hybrid_25.75.gds <- "subset_data/noreponly_v2.75.renamed.Hybrid_25.75.gds"
 seqSetFilter(gds, sample.id=Hybrid_25.75$Sample)  
 seqExport(gds, Hybrid_25.75.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/noreponly_v2.75.renamed.Hybrid_25.75.vcf.gz")
+seqGDS2VCF(gds, "subset_data/noreponly_v2.75.renamed.Hybrid_25.75.vcf.gz")
 seqResetFilter(gds) 
 
-vcf <- read.vcfR("data/noreponly_v2.75.renamed.pure_MCA.vcf.gz")
+vcf <- read.vcfR("subset_data/noreponly_v2.75.renamed.pure_MCA.vcf.gz")
 vcf 
 ################################################################################
 ## FROM LD pruned data ##
@@ -561,102 +556,102 @@ gds
 ################################################################################
 ## Make subset gds and vcf data ##
 ################################################################################
-CM.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_CM.gds"
+CM.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_CM.gds"
 seqSetFilter(gds, sample.id=pure_morelets$Sample, ret.idx=TRUE)  
 seqExport(gds, CM.gds)
 ## open a connection to the GDS file - SeqArray Package 
 gds <- seqOpen(CM.gds, readonly = FALSE)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_CM.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_CM.vcf.gz")
 seqResetFilter(gds) 
 
-all.CM.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.all_CM.gds"
+all.CM.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.all_CM.gds"
 seqSetFilter(gds, sample.id=All_CM$Sample)  
 seqExport(gds, all.CM.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_CM.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_CM.vcf.gz")
 seqResetFilter(gds) 
 
-CA.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_CA.gds"
+CA.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_CA.gds"
 seqSetFilter(gds, sample.id=CA$Sample)  
 seqExport(gds, CA.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_CA.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_CA.vcf.gz")
 seqResetFilter(gds) 
 
-all.CA.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.all_CA.gds"
+all.CA.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.all_CA.gds"
 seqSetFilter(gds, sample.id=All_CA$Sample)  
 seqExport(gds, all.CA.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_CA.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_CA.vcf.gz")
 seqResetFilter(gds) 
 
-pure.acutus.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_acutus.gds"
+pure.acutus.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_acutus.gds"
 seqSetFilter(gds, sample.id=Acutus_90$Sample)  
 seqExport(gds, pure.acutus.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_acutus.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_acutus.vcf.gz")
 seqResetFilter(gds) 
 
-MCA.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_MCA.gds"
+MCA.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_MCA.gds"
 seqSetFilter(gds, sample.id=MCA$Sample)  
 seqExport(gds, MCA.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_MCA.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.pure_MCA.vcf.gz")
 seqResetFilter(gds) 
 
-all.MCA.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.all_MCA.gds"
+all.MCA.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.all_MCA.gds"
 seqSetFilter(gds, sample.id=All_MCA$Sample)  
 seqExport(gds, all.MCA.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_MCA.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_MCA.vcf.gz")
 seqResetFilter(gds) 
 
-acutus.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.all_Acutus.gds"
+acutus.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.all_Acutus.gds"
 seqSetFilter(gds, sample.id=All_acutus$Sample)  
 seqExport(gds, acutus.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_Acutus.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_Acutus.vcf.gz")
 seqResetFilter(gds) 
 
-All_Hybrid.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_Hybrid.gds"
+All_Hybrid.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_Hybrid.gds"
 seqSetFilter(gds, sample.id=All_hybrid$Sample)  
 seqExport(gds, All_Hybrid.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_Hybrid.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.All_Hybrid.vcf.gz")
 seqResetFilter(gds) 
 
-F1_Hybrid.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.F1_Hybrid.gds"
+F1_Hybrid.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.F1_Hybrid.gds"
 seqSetFilter(gds, sample.id=F1_Hybrid$Sample)  
 seqExport(gds, F1_Hybrid.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.F1_Hybrid.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.F1_Hybrid.vcf.gz")
 seqResetFilter(gds) 
 
-Hybrid_CM_backcross.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_CM_backcross.gds"
+Hybrid_CM_backcross.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_CM_backcross.gds"
 seqSetFilter(gds, sample.id=Hybrid_CM_backcross$Sample)  
 seqExport(gds, Hybrid_CM_backcross.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_CM_backcross.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_CM_backcross.vcf.gz")
 seqResetFilter(gds) 
 
-Hybrid_CA_backcross.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_CA_backcross.gds"
+Hybrid_CA_backcross.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_CA_backcross.gds"
 seqSetFilter(gds, sample.id=Hybrid_CA_backcross$Sample)  
 seqExport(gds, Hybrid_CA_backcross.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_CA_backcross.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_CA_backcross.vcf.gz")
 seqResetFilter(gds) 
 
-Hybrid_MCA_backcross.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_MCA_backcross.gds"
+Hybrid_MCA_backcross.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_MCA_backcross.gds"
 seqSetFilter(gds, sample.id=Hybrid_MCA_backcross$Sample)  
 seqExport(gds, Hybrid_MCA_backcross.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_MCA_backcross.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_MCA_backcross.vcf.gz")
 seqResetFilter(gds) 
 
-Hybrid_25.75.gds <- "data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_25.75.gds"
+Hybrid_25.75.gds <- "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_25.75.gds"
 seqSetFilter(gds, sample.id=Hybrid_25.75$Sample)  
 seqExport(gds, Hybrid_25.75.gds)
 # convert to vcf
-seqGDS2VCF(gds, "data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_25.75.vcf.gz")
+seqGDS2VCF(gds, "subset_data/LDpruned/noreponly_v2.75.renamed.LDpruned.Hybrid_25.75.vcf.gz")
 seqResetFilter(gds) 
